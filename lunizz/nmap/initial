@@ -1,0 +1,118 @@
+# Nmap 7.91 scan initiated Thu Mar  4 15:05:13 2021 as: nmap -sC -sV -oN nmap/initial -vvv -p 22,80,3306,4444,5000 10.10.187.91
+Nmap scan report for 10.10.187.91
+Host is up, received reset ttl 61 (0.15s latency).
+Scanned at 2021-03-04 15:05:14 PST for 16s
+
+PORT     STATE SERVICE REASON         VERSION
+22/tcp   open  ssh     syn-ack ttl 61 OpenSSH 7.6p1 Ubuntu 4ubuntu0.3 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   2048 f8:08:db:be:ed:80:d1:ef:a4:b0:a9:e8:2d:e2:dc:ee (RSA)
+| ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDQ6tpIF+vVAr4XW2jvHXaX311/qtXWgA/XJsPs4e1sAEDV9x9qQb6d6YTUECsJVg7r/HLuK4U3Bn5tco9Aa4cfij07qlbby08K8ByOrCFHeOJreYVqjsCBMdOo29GC83hOH8IzCo99pONcuviuPtRXion4PURNZPkdiMjhJv0ugruICXvqvNuXCtb7o4cF+OGNx7vGzllSrBJoNW6dA3+bhwE+ktZ14Ezbycb4CzbGoKXC+SKqt+82VrwpC4F9B3JPsSs6dkutSW1Zs0mtBYynv4dXzi3/dyY89jNedHOzwlIsOOTPfMhDQ9Qu6LpixmbpTTKnAlW+6gVAo21pwWlZ
+|   256 79:01:d6:df:8b:0a:6e:ad:b7:d8:59:9a:94:0a:09:7a (ECDSA)
+| ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBBTbAWLeWIuaAVyErImxGlw4qYC6DkIkhWx6m84sgWaNBG5dhXu96NpywKz3Qr/lq2y53WN0RufLUlmQGhJ2QMA=
+|   256 b1:a9:ef:bb:7e:5b:01:cd:4c:8e:6b:bf:56:5d:a7:f4 (ED25519)
+|_ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILRqrXXIaHRlVe9pndYgXYOQLkggzjJoC6ZToAWWHeUH
+80/tcp   open  http    syn-ack ttl 61 Apache httpd 2.4.29 ((Ubuntu))
+| http-methods: 
+|_  Supported Methods: GET HEAD POST OPTIONS
+|_http-server-header: Apache/2.4.29 (Ubuntu)
+|_http-title: Apache2 Ubuntu Default Page: It works
+3306/tcp open  mysql   syn-ack ttl 61 MySQL 5.7.32-0ubuntu0.18.04.1
+| mysql-info: 
+|   Protocol: 10
+|   Version: 5.7.32-0ubuntu0.18.04.1
+|   Thread ID: 4
+|   Capabilities flags: 65535
+|   Some Capabilities: Support41Auth, DontAllowDatabaseTableColumn, IgnoreSigpipes, Speaks41ProtocolOld, Speaks41ProtocolNew, SupportsCompression, SupportsTransactions, IgnoreSpaceBeforeParenthesis, SwitchToSSLAfterHandshake, SupportsLoadDataLocal, LongColumnFlag, InteractiveClient, LongPassword, FoundRows, ODBCClient, ConnectWithDatabase, SupportsMultipleResults, SupportsMultipleStatments, SupportsAuthPlugins
+|   Status: Autocommit
+|   Salt: \x04\x7FW\x0B7\x1D-\x05mEL\x04Zjj\x18Qd~\x1D
+|_  Auth Plugin Name: mysql_native_password
+| ssl-cert: Subject: commonName=MySQL_Server_5.7.32_Auto_Generated_Server_Certificate
+| Issuer: commonName=MySQL_Server_5.7.32_Auto_Generated_CA_Certificate
+| Public Key type: rsa
+| Public Key bits: 2048
+| Signature Algorithm: sha256WithRSAEncryption
+| Not valid before: 2020-12-10T19:29:01
+| Not valid after:  2030-12-08T19:29:01
+| MD5:   1dd1 d145 b3aa d2c4 6652 764c 0cbd 3bbd
+| SHA-1: 183a eca2 02d3 982a 72a1 15d6 973b 6eb1 5cae 6e6c
+| -----BEGIN CERTIFICATE-----
+| MIIDBzCCAe+gAwIBAgIBAjANBgkqhkiG9w0BAQsFADA8MTowOAYDVQQDDDFNeVNR
+| TF9TZXJ2ZXJfNS43LjMyX0F1dG9fR2VuZXJhdGVkX0NBX0NlcnRpZmljYXRlMB4X
+| DTIwMTIxMDE5MjkwMVoXDTMwMTIwODE5MjkwMVowQDE+MDwGA1UEAww1TXlTUUxf
+| U2VydmVyXzUuNy4zMl9BdXRvX0dlbmVyYXRlZF9TZXJ2ZXJfQ2VydGlmaWNhdGUw
+| ggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC3dOQjVEiheXhdhZwnHxq4
+| 9+mEE3PH4Qu6d9vDYjX08ZzIPRRC4uk70KVmd7LAjtgLIeuw0uNHFZGJ0tyGH05M
+| FgBsbNpwBfKTiCaCdv+45sMcFAktoesNkhWxDJZfXm+j02kAq8FmKSG01q2b/EVR
+| 21xmiyfAkGzUF00yFq+evPY38zDANHuXDL7ar4SVhzNcUcIWNbymVPz7ShTj1AKz
+| NN2//xdKOTxwnOYTFVDDBZ9S+MwJXVlSbREg5iant1CldktC5C7olpGsIsyBJXDO
+| O4fO0LaA0NLqkgggE2kH5WUhOJVeatSLnESa7inmiN3gs3YLEuNZDm4Q9SCul33r
+| AgMBAAGjEDAOMAwGA1UdEwEB/wQCMAAwDQYJKoZIhvcNAQELBQADggEBAGpSusxJ
+| qpmorCaIM+ILbP/e9P2eC/p5JbtZtT6kOhrHSLO5JMalq4r2SYCIcYdWc53KbE4O
+| yvl9sFLsL7J0gOkrjXJquyjzcQEpC8EbrWiYgLHCCZUCR1ATwT/ZT4b1fZz2Og38
+| BdNLMlRV5KRRTfvvTvNkax7wmrbUjrnnuYOc4JJpMR1HMGk3ZDpgn/GP0oBAsJuS
+| S0bMSkdBXDGof4NDbvMBKNfhmld7BAOKn1vFSvwzsyLQvaLdJ6UExHNgsIb3BOMv
+| AbkjXHlx2ciuMYTPG/T3gkf503ZCkXHfyiibqptuoKH6BbNp+omKHcKBFqx+b7NS
+| SUxy89TgA5jAO44=
+|_-----END CERTIFICATE-----
+|_ssl-date: TLS randomness does not represent time
+4444/tcp open  krb524? syn-ack ttl 61
+| fingerprint-strings: 
+|   GetRequest: 
+|     Can you decode this for me?
+|     ZXh0cmVtZWhhcmRyb290cGFzc3dvcmQ=
+|     Wrong Password
+|   NULL: 
+|     Can you decode this for me?
+|     ZXh0cmVtZWhhcmRyb290cGFzc3dvcmQ=
+|   SSLSessionReq: 
+|     Can you decode this for me?
+|_    cmFuZG9tcGFzc3dvcmQ=
+5000/tcp open  upnp?   syn-ack ttl 61
+| fingerprint-strings: 
+|   DNSStatusRequestTCP, DNSVersionBindReqTCP, GenericLines, HTTPOptions, JavaRMI, Kerberos, LANDesk-RC, LDAPBindReq, NULL, RPCCheck, RTSPRequest, SIPOptions, SSLSessionReq, X11Probe, ZendJavaBridge, afp, giop: 
+|     OpenSSH 5.1
+|_    Unable to load config info from /usr/local/ssl/openssl.cnf
+2 services unrecognized despite returning data. If you know the service/version, please submit the following fingerprints at https://nmap.org/cgi-bin/submit.cgi?new-service :
+==============NEXT SERVICE FINGERPRINT (SUBMIT INDIVIDUALLY)==============
+SF-Port4444-TCP:V=7.91%I=7%D=3/4%Time=604167B0%P=x86_64-pc-linux-gnu%r(NUL
+SF:L,3D,"Can\x20you\x20decode\x20this\x20for\x20me\?\nZXh0cmVtZWhhcmRyb290
+SF:cGFzc3dvcmQ=\n")%r(GetRequest,4B,"Can\x20you\x20decode\x20this\x20for\x
+SF:20me\?\nZXh0cmVtZWhhcmRyb290cGFzc3dvcmQ=\nWrong\x20Password")%r(SSLSess
+SF:ionReq,31,"Can\x20you\x20decode\x20this\x20for\x20me\?\ncmFuZG9tcGFzc3d
+SF:vcmQ=\n");
+==============NEXT SERVICE FINGERPRINT (SUBMIT INDIVIDUALLY)==============
+SF-Port5000-TCP:V=7.91%I=7%D=3/4%Time=604167AB%P=x86_64-pc-linux-gnu%r(NUL
+SF:L,46,"OpenSSH\x205\.1\nUnable\x20to\x20load\x20config\x20info\x20from\x
+SF:20/usr/local/ssl/openssl\.cnf")%r(GenericLines,46,"OpenSSH\x205\.1\nUna
+SF:ble\x20to\x20load\x20config\x20info\x20from\x20/usr/local/ssl/openssl\.
+SF:cnf")%r(RTSPRequest,46,"OpenSSH\x205\.1\nUnable\x20to\x20load\x20config
+SF:\x20info\x20from\x20/usr/local/ssl/openssl\.cnf")%r(DNSVersionBindReqTC
+SF:P,46,"OpenSSH\x205\.1\nUnable\x20to\x20load\x20config\x20info\x20from\x
+SF:20/usr/local/ssl/openssl\.cnf")%r(ZendJavaBridge,46,"OpenSSH\x205\.1\nU
+SF:nable\x20to\x20load\x20config\x20info\x20from\x20/usr/local/ssl/openssl
+SF:\.cnf")%r(HTTPOptions,46,"OpenSSH\x205\.1\nUnable\x20to\x20load\x20conf
+SF:ig\x20info\x20from\x20/usr/local/ssl/openssl\.cnf")%r(RPCCheck,46,"Open
+SF:SSH\x205\.1\nUnable\x20to\x20load\x20config\x20info\x20from\x20/usr/loc
+SF:al/ssl/openssl\.cnf")%r(DNSStatusRequestTCP,46,"OpenSSH\x205\.1\nUnable
+SF:\x20to\x20load\x20config\x20info\x20from\x20/usr/local/ssl/openssl\.cnf
+SF:")%r(SSLSessionReq,46,"OpenSSH\x205\.1\nUnable\x20to\x20load\x20config\
+SF:x20info\x20from\x20/usr/local/ssl/openssl\.cnf")%r(Kerberos,46,"OpenSSH
+SF:\x205\.1\nUnable\x20to\x20load\x20config\x20info\x20from\x20/usr/local/
+SF:ssl/openssl\.cnf")%r(X11Probe,46,"OpenSSH\x205\.1\nUnable\x20to\x20load
+SF:\x20config\x20info\x20from\x20/usr/local/ssl/openssl\.cnf")%r(LDAPBindR
+SF:eq,46,"OpenSSH\x205\.1\nUnable\x20to\x20load\x20config\x20info\x20from\
+SF:x20/usr/local/ssl/openssl\.cnf")%r(SIPOptions,46,"OpenSSH\x205\.1\nUnab
+SF:le\x20to\x20load\x20config\x20info\x20from\x20/usr/local/ssl/openssl\.c
+SF:nf")%r(LANDesk-RC,46,"OpenSSH\x205\.1\nUnable\x20to\x20load\x20config\x
+SF:20info\x20from\x20/usr/local/ssl/openssl\.cnf")%r(JavaRMI,46,"OpenSSH\x
+SF:205\.1\nUnable\x20to\x20load\x20config\x20info\x20from\x20/usr/local/ss
+SF:l/openssl\.cnf")%r(afp,46,"OpenSSH\x205\.1\nUnable\x20to\x20load\x20con
+SF:fig\x20info\x20from\x20/usr/local/ssl/openssl\.cnf")%r(giop,46,"OpenSSH
+SF:\x205\.1\nUnable\x20to\x20load\x20config\x20info\x20from\x20/usr/local/
+SF:ssl/openssl\.cnf");
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Read data files from: /usr/bin/../share/nmap
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Thu Mar  4 15:05:30 2021 -- 1 IP address (1 host up) scanned in 17.83 seconds

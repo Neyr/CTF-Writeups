@@ -1,0 +1,41 @@
+# Nmap 7.91 scan initiated Sun Feb 14 14:19:07 2021 as: nmap -A -sC -sV -o nmap/initial 10.10.26.86
+Nmap scan report for 10.10.26.86
+Host is up (0.15s latency).
+Not shown: 998 closed ports
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh?
+| fingerprint-strings: 
+|   GenericLines: 
+|_    j$ j_x
+|_ssh-hostkey: ERROR: Script execution failed (use -d to debug)
+80/tcp open  http    nginx 1.19.6
+| http-robots.txt: 3 disallowed entries 
+|_/api/ /exif-util /*.bak.txt$
+|_http-server-header: nginx/1.19.6
+|_http-title: docker-escape-nuxt
+1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
+SF-Port22-TCP:V=7.91%I=7%D=2/14%Time=6029A1EA%P=x86_64-pc-linux-gnu%r(Gene
+SF:ricLines,8,"j\$\x20j_x\r\n");
+No exact OS matches for host (If you know what OS is running on it, see https://nmap.org/submit/ ).
+TCP/IP fingerprint:
+OS:SCAN(V=7.91%E=4%D=2/14%OT=22%CT=1%CU=44648%PV=Y%DS=4%DC=T%G=Y%TM=6029A2A
+OS:D%P=x86_64-pc-linux-gnu)SEQ(SP=FD%GCD=1%ISR=108%TI=Z%CI=Z%II=I%TS=A)OPS(
+OS:O1=M506ST11NW7%O2=M506ST11NW7%O3=M506NNT11NW7%O4=M506ST11NW7%O5=M506ST11
+OS:NW7%O6=M506ST11)WIN(W1=FE88%W2=FE88%W3=FE88%W4=FE88%W5=FE88%W6=FE88)ECN(
+OS:R=Y%DF=Y%T=3F%W=FAF0%O=M506NNSNW7%CC=Y%Q=)T1(R=Y%DF=Y%T=3F%S=O%A=S+%F=AS
+OS:%RD=0%Q=)T2(R=N)T3(R=N)T4(R=Y%DF=Y%T=3F%W=0%S=A%A=Z%F=R%O=%RD=0%Q=)T5(R=
+OS:Y%DF=Y%T=40%W=0%S=Z%A=S+%F=AR%O=%RD=0%Q=)T6(R=Y%DF=Y%T=40%W=0%S=A%A=Z%F=
+OS:R%O=%RD=0%Q=)T7(R=Y%DF=Y%T=40%W=0%S=Z%A=S+%F=AR%O=%RD=0%Q=)U1(R=Y%DF=N%T
+OS:=40%IPL=164%UN=0%RIPL=G%RID=G%RIPCK=G%RUCK=G%RUD=G)IE(R=Y%DFI=N%T=40%CD=
+OS:S)
+
+Network Distance: 4 hops
+
+TRACEROUTE (using port 995/tcp)
+HOP RTT       ADDRESS
+1   14.78 ms  10.13.0.1
+2   ... 3
+4   156.37 ms 10.10.26.86
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Sun Feb 14 14:22:37 2021 -- 1 IP address (1 host up) scanned in 211.20 seconds
