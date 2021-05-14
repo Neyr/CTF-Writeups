@@ -46,7 +46,13 @@ Service detection performed. Please report any incorrect results at https://nmap
 
 A default apache page with nothing interesting in the html code so lets enumerate
 ```
+/index.html           (Status: 200) [Size: 10918]
+/blog                 (Status: 301) [Size: 311] [--> http://internal.thm/blog/]
+/wordpress            (Status: 301) [Size: 316] [--> http://internal.thm/wordpress/]
+/javascript           (Status: 301) [Size: 317] [--> http://internal.thm/javascript/]
+/phpmyadmin           (Status: 301) [Size: 317] [--> http://internal.thm/phpmyadmin/]
 ```
+The /phpmyadmin page was found later than the others and as such we had already begun work as below and proved unecessary.
 
 We find a /blog directory that takes us to a wordpress site, we find the login panel at /wp-login.php and try some default admin credentials to no avail so we go ahead and use wpscan as follows to try and find some extra information and then try and crack the admin password
 ```
