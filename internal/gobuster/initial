@@ -1,0 +1,5 @@
+/index.html           (Status: 200) [Size: 10918]
+/blog                 (Status: 301) [Size: 311] [--> http://internal.thm/blog/]
+/wordpress            (Status: 301) [Size: 316] [--> http://internal.thm/wordpress/]
+/javascript           (Status: 301) [Size: 317] [--> http://internal.thm/javascript/]
+/phpmyadmin           (Status: 301) [Size: 317] [--> http://internal.thm/phpmyadmin/]
