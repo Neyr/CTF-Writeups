@@ -1,4 +1,4 @@
-##Internal
+## Internal
 Scope of Work
 
 The client requests that an engineer conducts an external, web app, and internal assessment of the provided virtual environment. The client has asked that minimal information be provided about the assessment, wanting the engagement conducted from the eyes of a malicious actor (black box penetration test).  The client has asked that you secure two flags (no location provided) as proof of exploitation:
@@ -14,7 +14,7 @@ Additionally, the client has provided the following scope allowances:
     Submit the flags discovered to the dashboard
     Only the IP address assigned to your machine is in scope
 
-#Enumeration
+# Enumeration
 ```
 # Nmap 7.91 scan initiated Fri May 14 11:30:39 2021 as: nmap -sCV -oN nmap/initial -vvv -p 22,80 10.10.4.119
 Nmap scan report for internal.thm (10.10.4.119)
@@ -42,7 +42,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 # Nmap done at Fri May 14 11:30:52 2021 -- 1 IP address (1 host up) scanned in 12.89 seconds
 ```
 
-#Web Server port 80
+# Web Server port 80
 
 A default apache page with nothing interesting in the html code so lets enumerate
 ```
@@ -142,7 +142,7 @@ Trying admin / princess7 Time: 00:04:50 <                                    > (
 
 We were able to crack the password for admin and are informed the admin email registered is admin@internal.thm. Our wpscan also informed us that the theme being used is twentyseventeen so we can navigate to the theme editor and edit the 404.php page to now contain php reverse shell. We set up our listener and navigate to http://internal.thm/blog/wp-content/themes/twentyseventeen/404.php.
 
-#Initial Foothold
+# Initial Foothold
 
 We have established a initial foothold as the www-data user but can't really find any escalation vectors through sudo, cronjobs, or SUID binaries. So we do some enumeration and eventually find the following in /opt
 ```
@@ -156,7 +156,7 @@ aubreanna:REDACTED
 
 So we go ahead and use these crendential and are able to ssh as aubreanna
 
-#Root Escalation
+# Root Escalation
 
 We find the user.txt flag in the home directory of aubreanan but can't run sudo and don't find any new SUID binaries. However the follwing file in the home directory gives us some info
 ```
