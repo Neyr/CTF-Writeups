@@ -1,6 +1,6 @@
-##Tokyo Ghoul
+## Tokyo Ghoul
 
-#Enumeration
+# Enumeration
 ```
 # Nmap 7.91 scan initiated Mon Mar 15 15:25:26 2021 as: nmap -sC -sV -oN nmap/initial -vvv -p 22,21,80 10.10.144.68
 Nmap scan report for 10.10.144.68
@@ -14,7 +14,7 @@ PORT   STATE SERVICE REASON         VERSION
 | ftp-syst:
 |   STAT:
 | FTP server status:
-|      Connected to ::ffff:10.13.1.12
+|      Connected to ::ffff:IP
 |      Logged in as ftp
 |      TYPE: ASCII
 |      No session bandwidth limit
@@ -45,8 +45,9 @@ Service detection performed. Please report any incorrect results at https://nmap
 ```
 Looks like a ftp server that allows anonymous login, so lets check this out while we start enumerating the http server on port 80
 
-#FTP
+# FTP
 Going through all the directories here we find 3 files
+
 Aogiri_tree.txt
 ```
 Why are you so late?? i've been waiting for too long .
@@ -55,6 +56,7 @@ I knew Rize San more than anyone and she is a part of you, right?
 That mean you got her kagune , so you should activate her Kagune and to do that you should get all control to your body , i'll help you to know Rise san more and get her kagune , and don't forget you are now a part of the Aogiri tree .
 Bye Kaneki.
 ```
+
 need_to_talk
 a binary, we can call use strings to find the following amidst some interesting function names
 ```
@@ -106,7 +108,7 @@ if you can talk it allright you got my secret directory
 ```
 We can use cyberchef to turn this from morse code -> hex -> base64 and get the secret directory.
 
-#HTTP Server
+# HTTP Server
 Our enumeration hasn't come back with much but we got a secret directory above so lets check it out. We follow the link on the frontpage and on jasonroom.html we can find a hint in the source code comments that leads us to the ftp server we have already gotten information from, so lets go to the secret directory.
 ```
 Scan me scan me scan all my ideas aaaaahhhhhhhh 
@@ -166,7 +168,7 @@ john --show kamishiroPass
 
 We can then use these credentials to login over ssh
 
-#Privilege Escalation
+# Privilege Escalation
 We find the user flag in the current/home directory and a jail.py file
 ```
 kamishiro@vagrant:~$ sudo -l
@@ -178,6 +180,7 @@ Matching Defaults entries for kamishiro on vagrant.vm:
 User kamishiro may run the following commands on vagrant.vm:
     (ALL) /usr/bin/python3 /home/kamishiro/jail.py
 ```
+
 seems like we can run this python file as root so lets check it out to see if we can exploit it
 ```
 kamishiro@vagrant:~$ cat jail.py
@@ -198,6 +201,7 @@ def main():
 if __name__ == "__main__":
     main()
 ```
+
 Looks like the file lets us execute some commands but not the filtered ones that would give us 
 root escalation or read access however we find the following article, https://anee.me/escaping-python-jails-849c65cf306e. This details how we can bypass this jail and use python builtins to still be able to access these forbidden functions so we craft the following payload
 ```
