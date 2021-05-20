@@ -1,0 +1,7 @@
+/images               (Status: 301) [Size: 315] [--> http://10.10.160.176/images/]
+/index.html           (Status: 200) [Size: 6452]
+/login.html           (Status: 200) [Size: 5325]
+/books.html           (Status: 200) [Size: 2940]
+/assets               (Status: 301) [Size: 315] [--> http://10.10.160.176/assets/]
+/javascript           (Status: 301) [Size: 319] [--> http://10.10.160.176/javascript/]
+/LICENSE.txt          (Status: 200) [Size: 17130]
