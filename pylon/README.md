@@ -1,6 +1,6 @@
-##Pylon
+## Pylon
 
-#File Analysis
+# File Analysis
 For this room we are provided a file of interest to analyze and utilize to gain a foothold on the target system
 ```
 # exiftool file
@@ -55,7 +55,7 @@ lone_id
 ```
 We are able to find and extract a unecrypted ssh key presumably for the user lone, so at this point we can fire up the machine and see if we can leverage this ssh key
 
-#Enumeration
+# Enumeration
 ```
 # Nmap 7.91 scan initiated Fri Apr 30 10:49:33 2021 as: nmap -sCV -oN nmap/initial -vvv -p 22,222 10.10.135.152
 Nmap scan report for 10.10.135.152
