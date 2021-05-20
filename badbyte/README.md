@@ -1,6 +1,6 @@
-##Badbyte
+## Badbyte
 
-#Enumeration
+# Enumeration
 ```
 # Nmap 7.91 scan initiated Sat Mar 13 12:47:29 2021 as: nmap -sC -sV -oN nmap/initial -vvv -p 22,30024 10.10.134.177
 Nmap scan report for 10.10.134.177
@@ -40,7 +40,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 # Nmap done at Sat Mar 13 12:47:36 2021 -- 1 IP address (1 host up) scanned in 7.26 seconds
 ```
 
-#FTP
+# FTP
 FTP is running on port 30024 and we are able to login as anonymous. We login and get the two files on the server. We discover that this is id_rsa private key for the user errorcauser. THe key however needs a passphrawse so we use ssh2john to convert the key and then crack the result with john and the rockyou wordlist. With the passphrase we can get an inital foothold through the ssh as the errorcauser user
 
 #errorcauser port forwarding
@@ -137,7 +137,7 @@ Matching Modules
 ```
 We use the above to get a meterpreter session/shell on the machine as the cth user
 
-#cth privilege escalation
+# cth privilege escalation
 We can find the user flag in /home/cth
 we upload linpeas and search for some vulnerabilities
 
