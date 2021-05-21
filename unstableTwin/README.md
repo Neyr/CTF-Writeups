@@ -1,6 +1,6 @@
-##Unstable Twin
+## Unstable Twin
 
-#Enumeration
+# Enumeration
 ```
 # Nmap 7.91 scan initiated Sat May  1 12:39:14 2021 as: nmap -sCV -oN nmap/initial -vvv -p 22,80 10.10.75.126
 Nmap scan report for 10.10.75.126
@@ -158,7 +158,7 @@ Excellent we found all the user information we were looking for however next we 
 ```
 This seems promising we can go ahead and crack the hashed password using crackstation and now lets move on to connecting through SSH
 
-#Initial Foothold
+# Initial Foothold
 ```
 # ssh mary_ann@10.10.75.126                                                                                    255 ⨯
 mary_ann@10.10.75.126's password:
@@ -198,12 +198,10 @@ wrote extracted data to "marine.txt".
 ```
 Looks like we can extract a txt file from each image with the above format and no passphrase
 ```
-┌──(root💀kali)-[~/CTFS/unstableTwin]
-└─# cat *.txt
-Red - 1DVsdb2uEE0k5HK4GAIZ
-Green - eVYvs6J6HKpZWPG8pfeHoNG1
-Yellow - jKLNAAeCdl2J8BCRuXVX
+Red - REDACTED STRING
+Green - REDACTED STRING
+Yellow - REDACTED STRING
 You need to find all my children and arrange in a rainbow!
-Orange - PS0Mby2jomUKLjvQ4OSw
+Orange - REDACTED STRING
 ```
 Feels like I'm back in elementary school, ROYGBIV! So let combine the fragmented strings in rainbow order and see if we can decipher the final string. We can use cyberchef and try converting from different formats to ultimately find that it is a base62 string and we recieve our final flag
