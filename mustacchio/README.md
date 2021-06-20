@@ -1,6 +1,6 @@
-##Mustacchio
+## Mustacchio
 
-#Enumeration
+# Enumeration
 ```
 # Nmap 7.91 scan initiated Sun Jun 20 11:21:54 2021 as: nmap -sCV -oN nmap/initial -vvv -p 22,80,8765 10.10.236.197
 Nmap scan report for 10.10.236.197
@@ -38,7 +38,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 
 ssh a web server and what looks like a login panel let start by looking at the web server
 
-#Web Server Port 80
+# Web Server Port 80
 ```
 /images               (Status: 301) [Size: 315] [--> http://10.10.236.197/images/]
 /about.html           (Status: 200) [Size: 3152]
@@ -132,7 +132,7 @@ john --wordlist=/usr/share/wordlists/rockyou.txt barry_id_rsa_hash
 
 We quickly are able to crack the pass and the use the ssh key to gain a foothold
 
-#Privilege Escalation
+# Privilege Escalation
 We find the user.txt flag in barry's home directory. We try and check for sudo privileges but the credential used for barry's key doesn't work here. However we find the following when looking for suid files
 ```
 barry@mustacchio:~$ find / -type f -perm -4000 2>/dev/null
