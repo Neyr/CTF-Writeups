@@ -1,0 +1,13 @@
+# Nmap 7.91 scan initiated Wed Jun 23 16:09:52 2021 as: nmap -oN nmap/postPortKnock -vvv -p 22,21,4420,8080 10.10.1.243
+Nmap scan report for 10.10.1.243
+Host is up, received timestamp-reply ttl 61 (0.15s latency).
+Scanned at 2021-06-23 16:09:52 PDT for 1s
+
+PORT     STATE SERVICE     REASON
+21/tcp   open  ftp         syn-ack ttl 61
+22/tcp   open  ssh         syn-ack ttl 61
+4420/tcp open  nvm-express syn-ack ttl 61
+8080/tcp open  http-proxy  syn-ack ttl 60
+
+Read data files from: /usr/bin/../share/nmap
+# Nmap done at Wed Jun 23 16:09:53 2021 -- 1 IP address (1 host up) scanned in 0.62 seconds
