@@ -1,0 +1,3 @@
+/index.html           (Status: 200) [Size: 0]
+/admin                (Status: 301) [Size: 325] [--> http://10.10.128.167/webmasters/admin/]
+/backups              (Status: 301) [Size: 327] [--> http://10.10.128.167/webmasters/backups/]
